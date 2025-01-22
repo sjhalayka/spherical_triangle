@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	cout << "Generating (approximately) spherical triangles." << endl;
 
 	// Get edge length data to make for variable subdivision
-	size_t max_subdivisions = 2;
+	size_t max_subdivisions = 5;
 	double longest_edge = 0;
 
 	const double exponent = 1; // lesser value means more subdivision

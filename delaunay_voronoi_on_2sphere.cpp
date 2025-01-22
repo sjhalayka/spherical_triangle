@@ -31,7 +31,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 	clear_meshes();
 
 	vertices.push_back(vector_3(0, 0, 0));
-	size_t centre_vertex_index = vertices.size() - 1;
+	//size_t centre_vertex_index = vertices.size() - 1;
 
 	tetgenio in, out;
 	in.mesh_dim = 3;
@@ -56,15 +56,19 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 	for (size_t t = 0; t < out.numberofpoints; t++)
 	{
-		double x = out.pointlist[offset + 0];
-		double y = out.pointlist[offset + 1];
-		double z = out.pointlist[offset + 2];
-		new_points.push_back(custom_math::vector_3(x, y, z));
+		const double x = out.pointlist[offset + 0];
+		const double y = out.pointlist[offset + 1];
+		const double z = out.pointlist[offset + 2];
+
+		const custom_math::vector_3 W = vector_3(x, y, z);
+
+		new_points.push_back(W);
 
 		offset += 3;
 	}
 
 	vertices = new_points;
+	vertices.pop_back();
 
 	offset = 0;
 
@@ -81,28 +85,28 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		tri.i1 = j;
 		tri.i2 = i;
 
-		//if (tri.i0 != centre_vertex_index && tri.i1 != centre_vertex_index && tri.i2 != centre_vertex_index)
+		if (tri.i0 < vertices.size()  && tri.i1 < vertices.size() && tri.i2 < vertices.size() )
 			dtris.push_back(tri);
 
 		tri.i0 = l;
 		tri.i1 = j;
 		tri.i2 = k;
 
-		//if (tri.i0 != centre_vertex_index && tri.i1 != centre_vertex_index && tri.i2 != centre_vertex_index)
+		if (tri.i0 < vertices.size() && tri.i1 < vertices.size() && tri.i2 < vertices.size())
 			dtris.push_back(tri);
 
 		tri.i0 = l;
 		tri.i1 = k;
 		tri.i2 = i;
 
-		//if (tri.i0 != centre_vertex_index && tri.i1 != centre_vertex_index && tri.i2 != centre_vertex_index)
+		if (tri.i0 < vertices.size() && tri.i1 < vertices.size() && tri.i2 < vertices.size())
 			dtris.push_back(tri);
 
 		tri.i0 = l;
 		tri.i1 = i;
 		tri.i2 = j;
 
-		//if (tri.i0 != centre_vertex_index && tri.i1 != centre_vertex_index && tri.i2 != centre_vertex_index)
+		if (tri.i0 < vertices.size() && tri.i1 < vertices.size() && tri.i2 < vertices.size())
 			dtris.push_back(tri);
 
 		offset += 4;
