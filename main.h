@@ -1450,7 +1450,7 @@ void draw_objects(void)
 		{
 			glDisable(GL_LIGHTING);
 
-			glLineWidth(outline_width);
+			glLineWidth(2);
 
 			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
 
@@ -1464,10 +1464,6 @@ void draw_objects(void)
 
 			for(size_t i = 0; i < ctris.size(); i++)
 			{
-
-
-
-
 				ctris[i].draw_outline();
 			}
 
@@ -1489,6 +1485,35 @@ void draw_objects(void)
 		else
 			glDisable(GL_LIGHTING);
 
+		
+
+		glPointSize(4.0);
+
+		glBegin(GL_POINTS);
+
+
+		glColor3f(1, 1, 1);
+
+		for (size_t i = 0; i < tess.dual_vertices.size(); i++)
+		{
+			glVertex3f(tess.dual_vertices[i].x, tess.dual_vertices[i].y, tess.dual_vertices[i].z);
+
+		}
+
+		glColor3f(0, 0, 0);
+
+		for (size_t i = 0; i < tess.vertices.size(); i++)
+		{
+			glVertex3f(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
+
+		}
+
+
+		glEnd();
+		
+		
+		
+		
 		glBegin(GL_TRIANGLES);
 
 
@@ -1500,16 +1525,6 @@ void draw_objects(void)
 
 		for(size_t i = 0; i < tess.dtris.size(); i++)
 		{
-
-
-
-
-
-
-
-
-
-
 			if(false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i0][0]);
 			else

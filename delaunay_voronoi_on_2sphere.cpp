@@ -42,6 +42,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 	tetgenbehavior b;
 	b.quiet = 0;
 	b.verbose = 1;
+	b.voroout = 1;
 
 	tetrahedralize(&b, &in, &out);
 
@@ -60,9 +61,38 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		const double y = out.pointlist[offset + 1];
 		const double z = out.pointlist[offset + 2];
 
-		const custom_math::vector_3 W = vector_3(x, y, z);
+		const custom_math::vector_3 W = vector_3(x, y, z).normalize();
 
 		new_points.push_back(W);
+
+		offset += 3;	
+	}
+
+//	tetgenio::vorofacet* vf = out.vfacetlist;
+	//tetgenio::voroedge* ve = out.vedgelist;
+
+	//for (size_t t = 0; t < out.numberofvedges; t++)
+	//{
+
+	//	const double x = out.vpointlist[ve[t].v1];
+	//	const double y = out.vpointlist[ve[t].v1];
+	//	const double z = out.vpointlist[ve[t].v1];
+
+	//	cout << ve[t].v1 << " " << ve[t].v2 << endl;
+
+	//}
+
+	offset = 0;
+
+	for (size_t t = 0; t < out.numberofvpoints; t++)
+	{
+		const double x = out.vpointlist[offset + 0];
+		const double y = out.vpointlist[offset + 1];
+		const double z = out.vpointlist[offset + 2];
+
+		const custom_math::vector_3 W = vector_3(x, y, z).normalize();
+
+		dual_vertices.push_back(W);
 
 		offset += 3;
 	}
