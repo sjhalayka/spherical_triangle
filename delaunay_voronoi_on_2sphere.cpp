@@ -67,20 +67,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		offset += 3;	
 	}
-
-//	tetgenio::vorofacet* vf = out.vfacetlist;
-	//tetgenio::voroedge* ve = out.vedgelist;
-
-	//for (size_t t = 0; t < out.numberofvedges; t++)
-	//{
-
-	//	const double x = out.vpointlist[ve[t].v1];
-	//	const double y = out.vpointlist[ve[t].v1];
-	//	const double z = out.vpointlist[ve[t].v1];
-
-	//	cout << ve[t].v1 << " " << ve[t].v2 << endl;
-
-	//}
+	
+	tetgenio::vorofacet* vf = out.vfacetlist;
+	tetgenio::voroedge* ve = out.vedgelist;
 
 	offset = 0;
 
@@ -96,6 +85,58 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		offset += 3;
 	}
+
+
+	vector<vector_3> temp_dual_vertices = dual_vertices;
+	dual_vertices.clear();
+
+	for (size_t t = 0; t < out.numberofvfacets; t++)
+	{
+		tetgenio::vorofacet vf = out.vfacetlist[t];
+
+		size_t edge_count = vf.elist[0];
+
+		for (size_t i = 1; i < edge_count + 1; i++)
+		{
+			if (i != -1)
+			{
+				temp_dual_vertices.push_back(out.vpointlist[out.vedgelist[i].v1]);
+				temp_dual_vertices.push_back(out.vpointlist[out.vedgelist[i].v2]);
+			}
+		}
+
+		cout << endl;
+	}
+
+	dual_vertices = temp_dual_vertices;
+
+
+	//for (size_t t = 0; t < out.numberofvedges; t++)
+	//{
+
+	//	const double x = out.vpointlist[ve[t].v1];
+	//	const double y = out.vpointlist[ve[t].v1];
+	//	const double z = out.vpointlist[ve[t].v1];
+
+	//	cout << ve[t].v1 << " " << ve[t].v2 << endl;
+
+	//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	vertices = new_points;
 	vertices.pop_back();

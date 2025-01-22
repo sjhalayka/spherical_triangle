@@ -482,141 +482,147 @@ void generate_trend_materials(void)
 
 void generate_temperature_materials(void)
 {
-	static const double invalid_data_shade = 0.75;
+	//static const double invalid_data_shade = 0.75;
 
-	global_min_temp = 1000;
-	global_max_temp = -1000;
-	vector<float> temperatures;
+	//global_min_temp = 1000;
+	//global_max_temp = -1000;
+	//vector<float> temperatures;
 
-	set<size_t> invalid_vertices;
+	//set<size_t> invalid_vertices;
 
 	for(size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		if(sd[i].years.end() == sd[i].years.find(curr_year))
-		{
-			if(true == spatial_interpolation)
-				invalid_vertices.insert(i);
-
-			materials[i][0] = invalid_data_shade;
-			materials[i][1] = invalid_data_shade;
-			materials[i][2] = invalid_data_shade;
-			materials[i][3] = 1;
-		}
-		else
-		{
-			double temp = sd[i].years[curr_year].temperatures[curr_month];
-
-			if(temp == -99)
-			{
-				if(true == spatial_interpolation)
-					invalid_vertices.insert(i);
-
-				materials[i][0] = invalid_data_shade;
-				materials[i][1] = invalid_data_shade;
-				materials[i][2] = invalid_data_shade;
-				materials[i][3] = 1;
-			}
-			else
-			{
-				if(temp < global_min_temp)
-					global_min_temp = temp;
-
-				if(temp > global_max_temp)
-					global_max_temp = temp;
-
-				temperatures.push_back(temp);
+		materials[i][0] = 0.6666;
+		materials[i][1] = 0.6666;
+		materials[i][2] = 0.6666;
+		materials[i][3] = 1;
 
 
+		//if(sd[i].years.end() == sd[i].years.find(curr_year))
+		//{
+		//	if(true == spatial_interpolation)
+		//		invalid_vertices.insert(i);
 
-				static const double temp_cap = 30;
-				static RGB rgb;
+		//	materials[i][0] = invalid_data_shade;
+		//	materials[i][1] = invalid_data_shade;
+		//	materials[i][2] = invalid_data_shade;
+		//	materials[i][3] = 1;
+		//}
+		//else
+		//{
+		//	double temp = sd[i].years[curr_year].temperatures[curr_month];
 
-				if(temp > temp_cap)
-					temp = temp_cap;
+		//	if(temp == -99)
+		//	{
+		//		if(true == spatial_interpolation)
+		//			invalid_vertices.insert(i);
 
-				if(temp < -temp_cap)
-					temp = -temp_cap;
+		//		materials[i][0] = invalid_data_shade;
+		//		materials[i][1] = invalid_data_shade;
+		//		materials[i][2] = invalid_data_shade;
+		//		materials[i][3] = 1;
+		//	}
+		//	else
+		//	{
+		//		if(temp < global_min_temp)
+		//			global_min_temp = temp;
 
-				temp = -temp;
+		//		if(temp > global_max_temp)
+		//			global_max_temp = temp;
 
-				temp += temp_cap;
-				temp /= temp_cap*2.0;
+		//		temperatures.push_back(temp);
 
-				rgb = HSBtoRGB(static_cast<short unsigned int>(temp*260.0), 66, 100);
 
-				materials[i][0] = static_cast<double>(rgb.r)/255.0;
-				materials[i][1] = static_cast<double>(rgb.g)/255.0;
-				materials[i][2] = static_cast<double>(rgb.b)/255.0;
-				materials[i][3] = 1;
-			}
-		}
+
+		//		static const double temp_cap = 30;
+		//		static RGB rgb;
+
+		//		if(temp > temp_cap)
+		//			temp = temp_cap;
+
+		//		if(temp < -temp_cap)
+		//			temp = -temp_cap;
+
+		//		temp = -temp;
+
+		//		temp += temp_cap;
+		//		temp /= temp_cap*2.0;
+
+		//		rgb = HSBtoRGB(static_cast<short unsigned int>(temp*260.0), 66, 100);
+
+		//		materials[i][0] = static_cast<double>(rgb.r)/255.0;
+		//		materials[i][1] = static_cast<double>(rgb.g)/255.0;
+		//		materials[i][2] = static_cast<double>(rgb.b)/255.0;
+		//		materials[i][3] = 1;
+		//	}
+		//}
 	}
 
-	global_mean_temp = 0;
+	//global_mean_temp = 0;
 
-	for(size_t i = 0; i < temperatures.size(); i++)
-		global_mean_temp += temperatures[i];
+	//for(size_t i = 0; i < temperatures.size(); i++)
+	//	global_mean_temp += temperatures[i];
 
-	global_mean_temp /= static_cast<double>(temperatures.size());
-	global_mean_temp_std_dev = standard_deviation(temperatures);
+	//global_mean_temp /= static_cast<double>(temperatures.size());
+	//global_mean_temp_std_dev = standard_deviation(temperatures);
 
 
 
-	if(true == spatial_interpolation)
-	{
-		size_t last_invalid_vertices_size = invalid_vertices.size();
+	//if(true == spatial_interpolation)
+	//{
+	//	size_t last_invalid_vertices_size = invalid_vertices.size();
 
-		while(0 != invalid_vertices.size())
-		{
-			set<size_t> new_invalid_vertices;
+	//	while(0 != invalid_vertices.size())
+	//	{
+	//		set<size_t> new_invalid_vertices;
 
-			for(set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
-			{
-				size_t valid_neighbour_count = 0;
-				
-				materials[*ci][0] = 0;
-				materials[*ci][1] = 0;
-				materials[*ci][2] = 0;
-				materials[*ci][3] = 0;
+	//		for(set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
+	//		{
+	//			size_t valid_neighbour_count = 0;
+	//			
+	//			materials[*ci][0] = 0;
+	//			materials[*ci][1] = 0;
+	//			materials[*ci][2] = 0;
+	//			materials[*ci][3] = 0;
 
-				for(size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
-				{
-					if(invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
-					{
-						valid_neighbour_count++;
+	//			for(size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
+	//			{
+	//				if(invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
+	//				{
+	//					valid_neighbour_count++;
 
-						materials[*ci][0] += materials[vertex_to_vertex[*ci][j]][0];
-						materials[*ci][1] += materials[vertex_to_vertex[*ci][j]][1];
-						materials[*ci][2] += materials[vertex_to_vertex[*ci][j]][2];
-						materials[*ci][3] += materials[vertex_to_vertex[*ci][j]][3];
-					}
-				}
+	//					materials[*ci][0] += materials[vertex_to_vertex[*ci][j]][0];
+	//					materials[*ci][1] += materials[vertex_to_vertex[*ci][j]][1];
+	//					materials[*ci][2] += materials[vertex_to_vertex[*ci][j]][2];
+	//					materials[*ci][3] += materials[vertex_to_vertex[*ci][j]][3];
+	//				}
+	//			}
 
-				if(0 == valid_neighbour_count)
-				{
-					new_invalid_vertices.insert(*ci);
-					materials[*ci][0] = invalid_data_shade;
-					materials[*ci][1] = invalid_data_shade;
-					materials[*ci][2] = invalid_data_shade;
-					materials[*ci][3] = 1;
-				}
-				else
-				{
-					materials[*ci][0] /= valid_neighbour_count;
-					materials[*ci][1] /= valid_neighbour_count;
-					materials[*ci][2] /= valid_neighbour_count;
-					materials[*ci][3] /= valid_neighbour_count;
-				}
-			}
+	//			if(0 == valid_neighbour_count)
+	//			{
+	//				new_invalid_vertices.insert(*ci);
+	//				materials[*ci][0] = invalid_data_shade;
+	//				materials[*ci][1] = invalid_data_shade;
+	//				materials[*ci][2] = invalid_data_shade;
+	//				materials[*ci][3] = 1;
+	//			}
+	//			else
+	//			{
+	//				materials[*ci][0] /= valid_neighbour_count;
+	//				materials[*ci][1] /= valid_neighbour_count;
+	//				materials[*ci][2] /= valid_neighbour_count;
+	//				materials[*ci][3] /= valid_neighbour_count;
+	//			}
+	//		}
 
-			invalid_vertices.swap(new_invalid_vertices);
+	//		invalid_vertices.swap(new_invalid_vertices);
 
-			if(invalid_vertices.size() == last_invalid_vertices_size)
-				break;
-			else
-				last_invalid_vertices_size = invalid_vertices.size();
-		}
-	}
+	//		if(invalid_vertices.size() == last_invalid_vertices_size)
+	//			break;
+	//		else
+	//			last_invalid_vertices_size = invalid_vertices.size();
+	//	}
+	//}
 
 	if(true == curved_triangles)
 	{
@@ -628,11 +634,7 @@ void generate_temperature_materials(void)
 
 void generate_materials(void)
 {
-	if(false == draw_trend_data)
-		generate_temperature_materials();
-	else
-		generate_trend_materials();
-
+	generate_temperature_materials();
 }
 
 
@@ -657,6 +659,25 @@ void xyz_to_latlon(const double &x, const double &y, const double &z, double &la
 	lat = phi/pi*180.0 - 90.0;
 	lon = theta/(2*pi)*360.0 - 180.0;
 }
+
+#include <random>
+std::mt19937 generator(0);
+std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+
+vector_3 RandomUnitVector(void)
+{
+	double z = dis(generator) * 2.0 - 1.0;
+	double a = dis(generator) * 2.0 * pi;
+
+	//MyBig z = static_cast<MyBig>(rand() % RAND_MAX) / static_cast<MyBig>(RAND_MAX) * 2 - 1;
+	//MyBig a = static_cast<MyBig>(rand() % RAND_MAX) / static_cast<MyBig>(RAND_MAX) * 2 * pi;
+	double r = sqrt(1.0f - z * z);
+	double x = r * cos(a);
+	double y = r * sin(a);
+	return vector_3(x, y, z).normalize();
+}
+
 
 
 
@@ -814,171 +835,171 @@ void display_func(void)
 	ostringstream oss;
 	oss.precision(4);
 
-	if(false == draw_trend_data)
-	{
-		render_string(10, start, GLUT_BITMAP_HELVETICA_10, string("Drawing temperature data."));
+	//if(false)//false == draw_trend_data)
+	//{
+	//	render_string(10, start, GLUT_BITMAP_HELVETICA_10, string("Drawing temperature data."));
 
-		if(true == draw_control_list)
-		{
-			render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-			render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: Decade -/+"));
-			render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Year -/+"));
-			render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Month -/+"));
+	//	if(true == draw_control_list)
+	//	{
+	//		render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
+	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: Decade -/+"));
+	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Year -/+"));
+	//		render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Month -/+"));
 
-			render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw linear trend data"));
+	//		render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw linear trend data"));
 
-			render_string(10, start + 9*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
-			render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
-			render_string(10, start + 11*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
-			render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
-			render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
-			render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
-			render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
-		}
-		else
-		{
-			render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-			render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
+	//		render_string(10, start + 9*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
+	//		render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
+	//		render_string(10, start + 11*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
+	//		render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
+	//		render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
+	//		render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
+	//		render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
+	//	}
+	//	else 
+	//	{
+	//		render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
+	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
 
-			if(718660 == sd[selected_vertex].station_id)
-				render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Paris of the prairies!"));
-		}
-
-
-		oss << "Total stations = " << tess.vertices.size();
-		render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Date = " << month_names[curr_month] << ' ' << curr_year;
-		render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
-		render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
-		render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		if(sd[selected_vertex].years.end() == sd[selected_vertex].years.find(curr_year))
-		{
-			oss << "Local temp = Not available for this year" << endl;
-			render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-			oss.str("");
-			oss.clear();
-		}
-		else
-		{
-			double temp = sd[selected_vertex].years[curr_year].temperatures[curr_month];
-
-			if(temp == -99)
-			{
-				oss << "Local temp = Not available for this month" << endl;
-				render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-				oss.str("");
-				oss.clear();
-			}
-			else
-			{
-				oss << "Local temp = " << temp << " C" << endl;
-				render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-				oss.str("");
-				oss.clear();
-			}
-		}
-
-		oss << "Global min, mean, max temp = " << global_min_temp << ", " << global_mean_temp << " +/- " << global_mean_temp_std_dev << ", " << global_max_temp << " C" << endl;
-		render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-	}
-	else
-	{
-		oss << "Drawing warming/cooling linear trend data." << endl;
-		render_string(10, start, GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Trend sample minimum = " << trend_minimum_samples;
-		render_string(10, start + 1*break_size, GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
+	//		if(718660 == sd[selected_vertex].station_id)
+	//			render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Paris of the prairies!"));
+	//	}
 
 
+	//	oss << "Total stations = " << tess.vertices.size();
+	//	render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-		if(true == draw_control_list)
-		{
-			render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-			render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("1/2: First trend decade -/+"));
-			render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: First trend year -/+"));
-			render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Last trend decade -/+"));
-			render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Last trend year -/+"));
-			render_string(10, start + 8*break_size, GLUT_BITMAP_HELVETICA_10, string("3/4: Trend sample minimum -/+"));
+	//	oss << "Date = " << month_names[curr_month] << ' ' << curr_year;
+	//	render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-			render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw temperature data"));
+	//	oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
+	//	render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-			render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
-			render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
-			render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
-			render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
-			render_string(10, start + 16*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
-			render_string(10, start + 17*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
-			render_string(10, start + 18*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
-		}
-		else
-		{
-			render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-			render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
+	//	oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
+	//	render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-			if(718660 == sd[selected_vertex].station_id)
-				render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("Go Blades!"));
-		}
+	//	if(sd[selected_vertex].years.end() == sd[selected_vertex].years.find(curr_year))
+	//	{
+	//		oss << "Local temp = Not available for this year" << endl;
+	//		render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//		oss.str("");
+	//		oss.clear();
+	//	}
+	//	else
+	//	{
+	//		double temp = sd[selected_vertex].years[curr_year].temperatures[curr_month];
 
+	//		if(temp == -99)
+	//		{
+	//			oss << "Local temp = Not available for this month" << endl;
+	//			render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//			oss.str("");
+	//			oss.clear();
+	//		}
+	//		else
+	//		{
+	//			oss << "Local temp = " << temp << " C" << endl;
+	//			render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//			oss.str("");
+	//			oss.clear();
+	//		}
+	//	}
 
-		oss << "Total stations = " << tess.vertices.size();
-		render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
+	//	oss << "Global min, mean, max temp = " << global_min_temp << ", " << global_mean_temp << " +/- " << global_mean_temp_std_dev << ", " << global_max_temp << " C" << endl;
+	//	render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-		oss << "Trend years = [" << trends_first_year << ", " << trends_last_year << ']';
-		render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
+	//}
+	//else
+	//{
+	//	oss << "Drawing warming/cooling linear trend data." << endl;
+	//	render_string(10, start, GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
-		oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
-		render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
-		render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		if(-99 == local_mean_trends[selected_vertex])
-			oss << "Local mean trend = Not available for this station" << endl;
-		else
-			oss << "Local mean trend = " << local_mean_trends[selected_vertex]*100.0f << " +/- " << local_trend_std_devs[selected_vertex]*100.0f << " C/century" << endl;
-
-		render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
-
-		oss << "Global min, mean, max trend = " << global_min_trend*100.0f << ", " << global_mean_trend*100.0f << " +/- " << global_mean_trend_std_dev*100.0f << ", " << global_max_trend*100.0f << " C/century" << endl;
-		render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-		oss.str("");
-		oss.clear();
+	//	oss << "Trend sample minimum = " << trend_minimum_samples;
+	//	render_string(10, start + 1*break_size, GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
 
 
 
+	//	if(true == draw_control_list)
+	//	{
+	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
+	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("1/2: First trend decade -/+"));
+	//		render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: First trend year -/+"));
+	//		render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Last trend decade -/+"));
+	//		render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Last trend year -/+"));
+	//		render_string(10, start + 8*break_size, GLUT_BITMAP_HELVETICA_10, string("3/4: Trend sample minimum -/+"));
 
-	}
+	//		render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw temperature data"));
+
+	//		render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
+	//		render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
+	//		render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
+	//		render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
+	//		render_string(10, start + 16*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
+	//		render_string(10, start + 17*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
+	//		render_string(10, start + 18*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
+	//	}
+	//	else
+	//	{
+	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
+	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
+
+	//		if(718660 == sd[selected_vertex].station_id)
+	//			render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("Go Blades!"));
+	//	}
+
+
+	//	oss << "Total stations = " << tess.vertices.size();
+	//	render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+	//	oss << "Trend years = [" << trends_first_year << ", " << trends_last_year << ']';
+	//	render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+	//	oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
+	//	render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+	//	oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
+	//	render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+	//	if(-99 == local_mean_trends[selected_vertex])
+	//		oss << "Local mean trend = Not available for this station" << endl;
+	//	else
+	//		oss << "Local mean trend = " << local_mean_trends[selected_vertex]*100.0f << " +/- " << local_trend_std_devs[selected_vertex]*100.0f << " C/century" << endl;
+
+	//	render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+	//	oss << "Global min, mean, max trend = " << global_min_trend*100.0f << ", " << global_mean_trend*100.0f << " +/- " << global_mean_trend_std_dev*100.0f << ", " << global_max_trend*100.0f << " C/century" << endl;
+	//	render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
+	//	oss.str("");
+	//	oss.clear();
+
+
+
+
+	//}
 
 
 	glPopMatrix();
@@ -1357,8 +1378,8 @@ void motion_func(int x, int y)
 	{
 		main_camera.w -= static_cast<float>(mouse_delta_y)*w_spacer;
 
-		if(main_camera.w < 1.1f)
-			main_camera.w = 1.1f;
+		if(main_camera.w < 0.1f)
+			main_camera.w = 0.1f;
 		else if(main_camera.w > 8.0f)
 			main_camera.w = 8.0f;
 	}
@@ -1438,9 +1459,9 @@ void draw_objects(void)
 			if(0 < main_camera.look_at.dot(ctris[i].circumcentre_normal))
 				continue;
 
-			if(false == disable_lighting)
-				ctris[i].draw_mat4();
-			else
+			//if(false == disable_lighting)
+			//	ctris[i].draw_mat4();
+			//else
 				ctris[i].draw_colour3();
 		}
 
@@ -1496,7 +1517,7 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.dual_vertices.size(); i++)
 		{
-			glVertex3f(tess.dual_vertices[i].x, tess.dual_vertices[i].y, tess.dual_vertices[i].z);
+			glVertex3d(tess.dual_vertices[i].x, tess.dual_vertices[i].y, tess.dual_vertices[i].z);
 
 		}
 
@@ -1504,7 +1525,7 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.vertices.size(); i++)
 		{
-			glVertex3f(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
+			glVertex3d(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
 
 		}
 
@@ -1531,7 +1552,7 @@ void draw_objects(void)
 				glColor3f(materials[tess.dtris[i].i0][0], materials[tess.dtris[i].i0][1], materials[tess.dtris[i].i0][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
-			glVertex3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 
 			if(false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i1][0]);
@@ -1539,7 +1560,7 @@ void draw_objects(void)
 				glColor3f(materials[tess.dtris[i].i1][0], materials[tess.dtris[i].i1][1], materials[tess.dtris[i].i1][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
-			glVertex3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 
 			if(false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i2][0]);
@@ -1547,7 +1568,7 @@ void draw_objects(void)
 				glColor3f(materials[tess.dtris[i].i2][0], materials[tess.dtris[i].i2][1], materials[tess.dtris[i].i2][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
-			glVertex3f(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+			glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 		}
 		glEnd();
 
@@ -1569,15 +1590,9 @@ void draw_objects(void)
 
 			for(size_t i = 0; i < tess.dtris.size(); i++)
 			{
-
-
-
-
-
-
-				glVertex3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
-				glVertex3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
-				glVertex3f(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+				glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+				glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+				glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 			}
 			glEnd();
 
@@ -1673,38 +1688,38 @@ void draw_objects(void)
 		const float length = 1.2;
 
 		glColor4f(1, 0, 0, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(length, 0, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(length, 0, 0);
 
 		glColor4f(0, 1, 0, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, length, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, length, 0);
 
 		glColor4f(0, 0, 1, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, length);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 0, length);
 
 		glColor4f(0, 1, 1, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(-length, 0, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(-length, 0, 0);
 
 		glColor4f(1, 0, 1, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, -length, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, -length, 0);
 
 		glColor4f(1, 1, 0, opacity);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, -length);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 0, -length);
 
 
 
 		//glColor4f(0, 0, 0, 0.25);
-		//glVertex3f(0, 0, 0);
-		//glVertex3f(-1, 0, 0);
-		//glVertex3f(0, 0, 0);
-		//glVertex3f(0, -1, 0);
-		//glVertex3f(0, 0, 0);
-		//glVertex3f(0, 0, -1);
+		//glVertex3d(0, 0, 0);
+		//glVertex3d(-1, 0, 0);
+		//glVertex3d(0, 0, 0);
+		//glVertex3d(0, -1, 0);
+		//glVertex3d(0, 0, 0);
+		//glVertex3d(0, 0, -1);
 
 		glEnd();
 

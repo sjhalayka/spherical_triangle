@@ -1,6 +1,10 @@
 #include "main.h"
 
 
+
+
+
+
 int main(int argc, char **argv)
 {
 	if(false == get_data(sd))
@@ -28,12 +32,43 @@ int main(int argc, char **argv)
 	trends_first_year = min_year;
 	trends_last_year = max_year;
 
-	tess.vertices.resize(sd.size());
+	tess.vertices.resize(100);
 
 	cout << "Generating vertices from latitude and longitude data." << endl;
 
-	for(size_t i = 0; i < tess.vertices.size(); i++)
-		latlon_to_xyz(sd[i].latitude, sd[i].longitude, tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
+	for (size_t i = 0; i < tess.vertices.size(); i++)
+		tess.vertices[i] = RandomUnitVector();
+
+
+
+
+
+	for (size_t x = 0; x < 50000; x++)
+	{
+		vector<vector_3> backup_points = tess.vertices;
+
+		for (size_t i = 0; i < 100 - 1; i++)
+		{
+			vector_3 a(0, 0, 0);
+
+			for (size_t j = i + 1; j < 100; j++)
+			{
+				custom_math::vector_3 grav_dir = backup_points[j] - backup_points[i];
+
+				double distance = grav_dir.length();
+				grav_dir.normalize();
+				custom_math::vector_3 accel = -grav_dir/pow(distance, 1.0);
+
+				a += accel;
+			}
+
+			tess.vertices[i] += a;
+			tess.vertices[i].normalize();
+		}
+	}
+
+
+
 
 	cout << "Generating triangulation of vertices via TetGen." << endl;
 
@@ -128,7 +163,7 @@ int main(int argc, char **argv)
 	local_trend_std_devs.resize(tess.vertices.size());
 
 
-	vector<float> mat(4, 0.0f);
+	vector<float> mat(4, 0.666f);
 	materials.resize(tess.vertices.size(), mat);
 	
 	generate_materials();
