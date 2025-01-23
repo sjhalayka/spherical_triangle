@@ -421,9 +421,9 @@ void generate_temperature_materials(void)
 {
 	for(size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		materials[i][0] = rand() / static_cast<double>(RAND_MAX);// 0.6666;
-		materials[i][1] = rand() / static_cast<double>(RAND_MAX);
-		materials[i][2] = rand() / static_cast<double>(RAND_MAX);
+		materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
+		materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+		materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
 		materials[i][3] = 1;
 	}
 
@@ -503,7 +503,7 @@ void init_opengl(const int &width, const int &height)
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_ALPHA|GLUT_DEPTH);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(win_x, win_y);
-	win_id = glutCreateWindow("HadCRUT3 viewer 1.03");
+	win_id = glutCreateWindow("Delaunay/Voronoi on 2-sphere");
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);

@@ -19,12 +19,12 @@ void delaunay_voronoi_on_2sphere::clear_meshes(void)
 	dtri_normals.clear();
 	dtri_centres.clear();
 	dtri_angles.clear();
-	dtri_adjacencies.clear();
+	//dtri_adjacencies.clear();
 
 	dual_vertices.clear();
 	voronoi_edges.clear();
-	vngons.clear();
-	vngon_adjacencies.clear();
+	//vngons.clear();
+	//vngon_adjacencies.clear();
 }
 
 bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
