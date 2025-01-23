@@ -11,7 +11,7 @@
 using custom_math::indexed_curved_triangle;
 using custom_math::d_3;
 using custom_math::d_3_sq;
-
+using custom_math::sorted_indexed_edge;
 
 #include <ctime>
 
@@ -1417,6 +1417,28 @@ void draw_objects(void)
 	glTranslatef(camera_x_transform, camera_y_transform, 0);
 	
 
+
+
+	glBegin(GL_LINES);
+
+	//cout << tess.voronoi_edges.size() << endl;
+
+	for (size_t i = 0; i < tess.voronoi_edges.size(); i++)
+	{
+		//cout << tess.voronoi_edges[i].v0 << " " << tess.voronoi_edges[i].v1 << endl;
+
+		vector_3 v0 = tess.dual_vertices[tess.voronoi_edges[i].v0];
+		vector_3 v1 = tess.dual_vertices[tess.voronoi_edges[i].v1];
+
+		/*cout << v0.length() << " " << v1.length() << endl;*/
+
+		glVertex3d(v0.x, v0.y, v0.z);
+		glVertex3d(v1.x, v1.y, v1.z);
+	}
+
+	glEnd();
+
+
 	// Draw vertices
 	if(true == draw_vertices)
 	{
@@ -1534,6 +1556,13 @@ void draw_objects(void)
 		
 		
 		
+
+
+
+
+
+
+
 		
 		glBegin(GL_TRIANGLES);
 

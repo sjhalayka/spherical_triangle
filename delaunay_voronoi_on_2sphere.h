@@ -55,6 +55,8 @@ public:
 	vector<indexed_triangle> dtri_adjacencies; // 3 adjacent triangles per triangle
 
 	vector<vector_3> dual_vertices; // Voronoi vertices
+	vector<sorted_indexed_edge> voronoi_edges;
+
 	vector<indexed_ngon> vngons; // Voronoi n-gons (cells)
 	vector<vector<size_t>> vngon_adjacencies; // Voronoi n-gon adjacencies
 
