@@ -7,32 +7,9 @@
 
 int main(int argc, char **argv)
 {
-	//if(false == get_data(sd))
-	//	return -1;
+	const size_t num_points = 100;
 
-	//min_year = 10000000;
-	//max_year = 0;
-
-	//for(size_t i = 0; i < sd.size(); i++)
-	//{
-	//	for(map<short unsigned int, year_data>::const_iterator ci = sd[i].years.begin(); ci != sd[i].years.end(); ci++)
-	//	{
-	//		if(ci->first < min_year)
-	//			min_year = ci->first;
-
-	//		if(ci->first > max_year)
-	//			max_year = ci->first;
-	//	}
-	//}
-
-
-
-	//curr_year = 1969;
-	//curr_month = 0;
-	//trends_first_year = min_year;
-	//trends_last_year = max_year;
-
-	tess.vertices.resize(100);
+	tess.vertices.resize(num_points);
 
 	cout << "Generating vertices from latitude and longitude data." << endl;
 
@@ -47,11 +24,11 @@ int main(int argc, char **argv)
 	{
 		vector<vector_3> backup_points = tess.vertices;
 
-		for (size_t i = 0; i < 100; i++)
+		for (size_t i = 0; i < num_points; i++)
 		{
 			vector_3 a(0, 0, 0);
 
-			for (size_t j = 0; j < 100; j++)
+			for (size_t j = 0; j < num_points; j++)
 			{
 				if (i == j)
 					continue;

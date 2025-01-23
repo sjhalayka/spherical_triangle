@@ -91,7 +91,7 @@ size_t vertex_slices = 5;
 size_t vertex_stacks = 4;
 
 float outline_width = 1;
-float outline_colour[] = {0, 0, 0};
+float outline_colour[] = { 0, 0, 0 };
 
 vector_3 control_list_colour(0, 0, 0);
 float triangle_colour[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -112,7 +112,7 @@ float camera_fov = 45;
 float camera_x_transform = 0;
 float camera_y_transform = 0;
 double u_spacer = 0.01;
-double v_spacer = 0.5*u_spacer;
+double v_spacer = 0.5 * u_spacer;
 double w_spacer = 0.1;
 double camera_near = 0.01;
 double camera_far = 10.0;
@@ -126,7 +126,7 @@ int mouse_x = 0;
 int mouse_y = 0;
 
 void idle_func(void);
-void init_opengl(const int &width, const int &height);
+void init_opengl(const int& width, const int& height);
 void reshape_func(int width, int height);
 void display_func(void);
 void keyboard_func(unsigned char key, int x, int y);
@@ -152,24 +152,24 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 	float G = 0.0f;
 	float B = 0.0f;
 
-	if(hue_degree > 359)
+	if (hue_degree > 359)
 		hue_degree = 359;
 
-	if(sat_percent > 100)
+	if (sat_percent > 100)
 		sat_percent = 100;
 
-	if(bri_percent > 100)
+	if (bri_percent > 100)
 		bri_percent = 100;
 
 	float hue_pos = 6.0f - ((static_cast<float>(hue_degree) / 359.0f) * 6.0f);
 
-	if(hue_pos >= 0.0f && hue_pos < 1.0f)
+	if (hue_pos >= 0.0f && hue_pos < 1.0f)
 	{
 		R = 255.0f;
 		G = 0.0f;
 		B = 255.0f * hue_pos;
 	}
-	else if(hue_pos >= 1.0f && hue_pos < 2.0f)
+	else if (hue_pos >= 1.0f && hue_pos < 2.0f)
 	{
 		hue_pos -= 1.0f;
 
@@ -177,7 +177,7 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		G = 0.0f;
 		B = 255.0f;
 	}
-	else if(hue_pos >= 2.0f && hue_pos < 3.0f)
+	else if (hue_pos >= 2.0f && hue_pos < 3.0f)
 	{
 		hue_pos -= 2.0f;
 
@@ -185,7 +185,7 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		G = 255.0f * hue_pos;
 		B = 255.0f;
 	}
-	else if(hue_pos >= 3.0f && hue_pos < 4.0f)
+	else if (hue_pos >= 3.0f && hue_pos < 4.0f)
 	{
 		hue_pos -= 3.0f;
 
@@ -193,7 +193,7 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		G = 255.0f;
 		B = 255.0f - (255.0f * hue_pos);
 	}
-	else if(hue_pos >= 4.0f && hue_pos < 5.0f)
+	else if (hue_pos >= 4.0f && hue_pos < 5.0f)
 	{
 		hue_pos -= 4.0f;
 
@@ -210,9 +210,9 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		B = 0.0f;
 	}
 
-	if(100 != sat_percent)
+	if (100 != sat_percent)
 	{
-		if(0 == sat_percent)
+		if (0 == sat_percent)
 		{
 			R = 255.0f;
 			G = 255.0f;
@@ -220,18 +220,18 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		}
 		else
 		{
-			if(255.0f != R)
+			if (255.0f != R)
 				R += ((255.0f - R) / 100.0f) * (100.0f - sat_percent);
-			if(255.0f != G)
+			if (255.0f != G)
 				G += ((255.0f - G) / 100.0f) * (100.0f - sat_percent);
-			if(255.0f != B)
+			if (255.0f != B)
 				B += ((255.0f - B) / 100.0f) * (100.0f - sat_percent);
 		}
 	}
 
-	if(100 != bri_percent)
+	if (100 != bri_percent)
 	{
-		if(0 == bri_percent)
+		if (0 == bri_percent)
 		{
 			R = 0.0f;
 			G = 0.0f;
@@ -239,28 +239,28 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 		}
 		else
 		{
-			if(0.0f != R)
-				R *= static_cast<float>(bri_percent)/100.0f;
-			if(0.0f != G)
-				G *= static_cast<float>(bri_percent)/100.0f;
-			if(0.0f != B)
-				B *= static_cast<float>(bri_percent)/100.0f;
+			if (0.0f != R)
+				R *= static_cast<float>(bri_percent) / 100.0f;
+			if (0.0f != G)
+				G *= static_cast<float>(bri_percent) / 100.0f;
+			if (0.0f != B)
+				B *= static_cast<float>(bri_percent) / 100.0f;
 		}
 	}
 
-	if(R < 0.0f)
+	if (R < 0.0f)
 		R = 0.0f;
-	else if(R > 255.0f)
+	else if (R > 255.0f)
 		R = 255.0f;
 
-	if(G < 0.0f)
+	if (G < 0.0f)
 		G = 0.0f;
-	else if(G > 255.0f)
+	else if (G > 255.0f)
 		G = 255.0f;
 
-	if(B < 0.0f)
+	if (B < 0.0f)
 		B = 0.0f;
-	else if(B > 255.0f)
+	else if (B > 255.0f)
 		B = 255.0f;
 
 	RGB rgb;
@@ -281,9 +281,9 @@ void generate_trend_materials(void)
 
 	set<size_t> invalid_vertices;
 
-	for(size_t i = 0; i < tess.vertices.size(); i++)
+	for (size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		if(1)//-99 == local_mean_trends[i])
+		if (1)//-99 == local_mean_trends[i])
 		{
 			//invalid_vertices.insert(i);
 
@@ -353,26 +353,26 @@ void generate_trend_materials(void)
 		}
 	}
 
-	if(1)//true == spatial_interpolation)
+	if (1)//true == spatial_interpolation)
 	{
 		size_t last_invalid_vertices_size = invalid_vertices.size();
 
-		while(0 != invalid_vertices.size())
+		while (0 != invalid_vertices.size())
 		{
 			set<size_t> new_invalid_vertices;
 
-			for(set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
+			for (set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
 			{
 				size_t valid_neighbour_count = 0;
-				
+
 				materials[*ci][0] = 0;
 				materials[*ci][1] = 0;
 				materials[*ci][2] = 0;
 				materials[*ci][3] = 0;
 
-				for(size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
+				for (size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
 				{
-					if(invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
+					if (invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
 					{
 						valid_neighbour_count++;
 
@@ -383,7 +383,7 @@ void generate_trend_materials(void)
 					}
 				}
 
-				if(0 == valid_neighbour_count)
+				if (0 == valid_neighbour_count)
 				{
 					new_invalid_vertices.insert(*ci);
 					materials[*ci][0] = invalid_data_shade;
@@ -402,23 +402,23 @@ void generate_trend_materials(void)
 
 			invalid_vertices.swap(new_invalid_vertices);
 
-			if(invalid_vertices.size() == last_invalid_vertices_size)
+			if (invalid_vertices.size() == last_invalid_vertices_size)
 				break;
 			else
 				last_invalid_vertices_size = invalid_vertices.size();
 		}
 	}
 
-	if(true == curved_triangles)
+	if (true == curved_triangles)
 	{
-		for(size_t i = 0; i < ctris.size(); i++)
+		for (size_t i = 0; i < ctris.size(); i++)
 			ctris[i].init_mats(materials[ctris[i].seed_i0], materials[ctris[i].seed_i1], materials[ctris[i].seed_i2]);
 	}
 }
 
 void generate_temperature_materials(void)
 {
-	for(size_t i = 0; i < tess.vertices.size(); i++)
+	for (size_t i = 0; i < tess.vertices.size(); i++)
 	{
 		materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
 		materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
@@ -426,9 +426,9 @@ void generate_temperature_materials(void)
 		materials[i][3] = 1;
 	}
 
-	if(true == curved_triangles)
+	if (true == curved_triangles)
 	{
-		for(size_t i = 0; i < ctris.size(); i++)
+		for (size_t i = 0; i < ctris.size(); i++)
 			ctris[i].init_mats(materials[ctris[i].seed_i0], materials[ctris[i].seed_i1], materials[ctris[i].seed_i2]);
 	}
 }
@@ -442,24 +442,24 @@ void generate_materials(void)
 
 
 
-void latlon_to_xyz(const double &lat, const double &lon, double &x, double &y, double &z)
+void latlon_to_xyz(const double& lat, const double& lon, double& x, double& y, double& z)
 {
-	double theta = 2*pi*(lon + 180.0)/360.0;
-	double phi = pi*(lat + 90.0)/180.0;
+	double theta = 2 * pi * (lon + 180.0) / 360.0;
+	double phi = pi * (lat + 90.0) / 180.0;
 
-	x = -(cos(theta)*sin(phi));
-	z = -(sin(theta)*sin(phi));
+	x = -(cos(theta) * sin(phi));
+	z = -(sin(theta) * sin(phi));
 	y = -cos(phi);
 }
 
 
-void xyz_to_latlon(const double &x, const double &y, const double &z, double &lat, double &lon)
+void xyz_to_latlon(const double& x, const double& y, const double& z, double& lat, double& lon)
 {
 	double theta = pi + atan2(z, x);
 	double phi = acos(-y);
 
-	lat = phi/pi*180.0 - 90.0;
-	lon = theta/(2*pi)*360.0 - 180.0;
+	lat = phi / pi * 180.0 - 90.0;
+	lon = theta / (2 * pi) * 360.0 - 180.0;
 }
 
 #include <random>
@@ -488,18 +488,18 @@ void idle_func(void)
 	glutPostRedisplay();
 }
 
-void init_opengl(const int &width, const int &height)
+void init_opengl(const int& width, const int& height)
 {
 	win_x = width;
 	win_y = height;
 
-	if(win_x < 1)
+	if (win_x < 1)
 		win_x = 1;
 
-	if(win_y < 1)
+	if (win_y < 1)
 		win_y = 1;
 
-	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_ALPHA|GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(win_x, win_y);
 	win_id = glutCreateWindow("Delaunay/Voronoi on 2-sphere");
@@ -525,20 +525,20 @@ void init_opengl(const int &width, const int &height)
 	//float light4_colour[] = {0.5f, 0.5f, 1.0f, 1.0f};
 	//float light5_colour[] = {1.0f, 1.0f, 0.5f, 1.0f};
 
-	float light0_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
-	float light1_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
-	float light2_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
-	float light3_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
-	float light4_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
-	float light5_colour[] = {0.8f, 0.8f, 0.8f, 0.8f};
+	float light0_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
+	float light1_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
+	float light2_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
+	float light3_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
+	float light4_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
+	float light5_colour[] = { 0.8f, 0.8f, 0.8f, 0.8f };
 
 
-	float light0_position[] = {1.0f, 0.0f, 0.0f, 0.0f };
-	float light1_position[] = {-1.0f, 0.0f, 0.0f, 0.0f };
-	float light2_position[] = {0.0f, 1.0f, 0.0f, 0.0f };
-	float light3_position[] = {0.0f, -1.0f, 0.0f, 0.0f };
-	float light4_position[] = {0.0f, 0.0f, 1.0f, 0.0f };
-	float light5_position[] = {0.0f, 0.0f, -1.0f, 0.0f };
+	float light0_position[] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	float light1_position[] = { -1.0f, 0.0f, 0.0f, 0.0f };
+	float light2_position[] = { 0.0f, 1.0f, 0.0f, 0.0f };
+	float light3_position[] = { 0.0f, -1.0f, 0.0f, 0.0f };
+	float light4_position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
+	float light5_position[] = { 0.0f, 0.0f, -1.0f, 0.0f };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_colour);
@@ -564,11 +564,11 @@ void init_opengl(const int &width, const int &height)
 	cam = main_camera.eye;
 	cam.normalize();
 
-	for(size_t i = 0; i < tess.vertices.size(); i++)
+	for (size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		float dotsq = cam.x*tess.vertices[i].x + cam.y*tess.vertices[i].y + cam.z*tess.vertices[i].z;
+		float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
 
-		if(dotsq > highest_dotsq)
+		if (dotsq > highest_dotsq)
 		{
 			highest_dotsq = dotsq;
 			selected_vertex = i;
@@ -583,10 +583,10 @@ void reshape_func(int width, int height)
 	win_x = width;
 	win_y = height;
 
-	if(win_x < 1)
+	if (win_x < 1)
 		win_x = 1;
 
-	if(win_y < 1)
+	if (win_y < 1)
 		win_y = 1;
 
 	glutSetWindow(win_id);
@@ -597,9 +597,9 @@ void reshape_func(int width, int height)
 }
 
 // Text drawing code originally from "GLUT Tutorial -- Bitmap Fonts and Orthogonal Projections" by A R Fernandes
-void render_string(int x, const int y, void *font, const string &text)
+void render_string(int x, const int y, void* font, const string& text)
 {
-	for(size_t i = 0; i < text.length(); i++)
+	for (size_t i = 0; i < text.length(); i++)
 	{
 		glRasterPos2i(x, y);
 		glutBitmapCharacter(font, text[i]);
@@ -610,7 +610,7 @@ void render_string(int x, const int y, void *font, const string &text)
 
 void display_func(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	draw_objects();
 
@@ -817,37 +817,37 @@ void display_func(void)
 
 void keyboard_func(unsigned char key, int x, int y)
 {
-	switch(tolower(key))
+	switch (tolower(key))
 	{
 
 	case 'f':
-		{
-			curved_triangles = !curved_triangles;
+	{
+		curved_triangles = !curved_triangles;
 		//	generate_materials();
-			break;
-		}
+		break;
+	}
 	case 'g':
-		{
-			//spatial_interpolation = !spatial_interpolation;
-		//	generate_materials();
-			break;
-		}
+	{
+		//spatial_interpolation = !spatial_interpolation;
+	//	generate_materials();
+		break;
+	}
 
 	case 'k':
-		{
-			draw_axis = !draw_axis;
-			break;
-		}
+	{
+		draw_axis = !draw_axis;
+		break;
+	}
 	case 'l':
-		{
-			draw_control_list = !draw_control_list;
-			break;
-		}
+	{
+		draw_control_list = !draw_control_list;
+		break;
+	}
 	case ';':
-		{
-			disable_lighting = !disable_lighting;
-			break;
-		}
+	{
+		disable_lighting = !disable_lighting;
+		break;
+	}
 
 	default:
 		break;
@@ -856,23 +856,23 @@ void keyboard_func(unsigned char key, int x, int y)
 
 void mouse_func(int button, int state, int x, int y)
 {
-	if(GLUT_LEFT_BUTTON == button)
+	if (GLUT_LEFT_BUTTON == button)
 	{
-		if(GLUT_DOWN == state)
+		if (GLUT_DOWN == state)
 			lmb_down = true;
 		else
 			lmb_down = false;
 	}
-	else if(GLUT_MIDDLE_BUTTON == button)
+	else if (GLUT_MIDDLE_BUTTON == button)
 	{
-		if(GLUT_DOWN == state)
+		if (GLUT_DOWN == state)
 			mmb_down = true;
 		else
 			mmb_down = false;
 	}
-	else if(GLUT_RIGHT_BUTTON == button)
+	else if (GLUT_RIGHT_BUTTON == button)
 	{
-		if(GLUT_DOWN == state)
+		if (GLUT_DOWN == state)
 			rmb_down = true;
 		else
 			rmb_down = false;
@@ -890,17 +890,17 @@ void motion_func(int x, int y)
 	int mouse_delta_x = mouse_x - prev_mouse_x;
 	int mouse_delta_y = prev_mouse_y - mouse_y;
 
-	if(true == lmb_down && (0 != mouse_delta_x || 0 != mouse_delta_y))
+	if (true == lmb_down && (0 != mouse_delta_x || 0 != mouse_delta_y))
 	{
-		if(main_camera.w < 1.5f)
+		if (main_camera.w < 1.5f)
 		{
-			main_camera.u -= static_cast<float>(mouse_delta_y)*u_spacer/10.0f;
-			main_camera.v += static_cast<float>(mouse_delta_x)*v_spacer/10.0f;
+			main_camera.u -= static_cast<float>(mouse_delta_y) * u_spacer / 10.0f;
+			main_camera.v += static_cast<float>(mouse_delta_x) * v_spacer / 10.0f;
 		}
 		else
 		{
-			main_camera.u -= static_cast<float>(mouse_delta_y)*u_spacer;
-			main_camera.v += static_cast<float>(mouse_delta_x)*v_spacer;
+			main_camera.u -= static_cast<float>(mouse_delta_y) * u_spacer;
+			main_camera.v += static_cast<float>(mouse_delta_x) * v_spacer;
 		}
 
 		float highest_dotsq = -1;
@@ -909,24 +909,24 @@ void motion_func(int x, int y)
 		cam = main_camera.eye;
 		cam.normalize();
 
-		for(size_t i = 0; i < tess.vertices.size(); i++)
+		for (size_t i = 0; i < tess.vertices.size(); i++)
 		{
-			float dotsq = cam.x*tess.vertices[i].x + cam.y*tess.vertices[i].y + cam.z*tess.vertices[i].z;
+			float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
 
-			if(dotsq > highest_dotsq)
+			if (dotsq > highest_dotsq)
 			{
 				highest_dotsq = dotsq;
 				selected_vertex = i;
 			}
 		}
 	}
-	else if(true == rmb_down && (0 != mouse_delta_y))
+	else if (true == rmb_down && (0 != mouse_delta_y))
 	{
-		main_camera.w -= static_cast<float>(mouse_delta_y)*w_spacer;
+		main_camera.w -= static_cast<float>(mouse_delta_y) * w_spacer;
 
-		if(main_camera.w < 0.1f)
+		if (main_camera.w < 0.1f)
 			main_camera.w = 0.1f;
-		else if(main_camera.w > 8.0f)
+		else if (main_camera.w > 8.0f)
 			main_camera.w = 8.0f;
 	}
 
@@ -941,7 +941,7 @@ void passive_motion_func(int x, int y)
 
 void draw_objects(void)
 {
-	if(false == disable_lighting)
+	if (false == disable_lighting)
 	{
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
@@ -956,43 +956,24 @@ void draw_objects(void)
 		glDisable(GL_LIGHTING);
 	}
 
-	static const float rad_to_deg = 180.0f/pi;
+	static const float rad_to_deg = 180.0f / pi;
 
 	glPushMatrix();
 
 	glTranslatef(camera_x_transform, camera_y_transform, 0);
-	
 
 
 
-	glBegin(GL_LINES);
 
-	glColor3f(1, 0.5, 0);
 
-	//cout << tess.voronoi_edges.size() << endl;
-
-	for (size_t i = 0; i < tess.voronoi_edges.size(); i++)
-	{
-		//cout << tess.voronoi_edges[i].v0 << " " << tess.voronoi_edges[i].v1 << endl;
-
-		vector_3 v0 = tess.dual_vertices[tess.voronoi_edges[i].v0];
-		vector_3 v1 = tess.dual_vertices[tess.voronoi_edges[i].v1];
-
-		/*cout << v0.length() << " " << v1.length() << endl;*/
-
-		glVertex3d(v0.x, v0.y, v0.z);
-		glVertex3d(v1.x, v1.y, v1.z);
-	}
-
-	glEnd();
 
 
 	// Draw vertices
-	if(true == draw_vertices)
+	if (true == draw_vertices)
 	{
-		for(size_t i = 0; i < tess.vertices.size(); i++)
+		for (size_t i = 0; i < tess.vertices.size(); i++)
 		{
-			if(false == disable_lighting)
+			if (false == disable_lighting)
 			{
 				float temp_mat[4];
 				temp_mat[0] = 1 - materials[i][0];
@@ -1014,30 +995,30 @@ void draw_objects(void)
 
 
 
-	if(true == curved_triangles)
+	if (true == curved_triangles)
 	{
-		if(false == disable_lighting)
+		if (false == disable_lighting)
 			glEnable(GL_LIGHTING);
 		else
 			glDisable(GL_LIGHTING);
 
 		glBegin(GL_TRIANGLES);
 
-		for(size_t i = 0; i < ctris.size(); i++)
+		for (size_t i = 0; i < ctris.size(); i++)
 		{
 			// Preliminary backface culling.
-			if(0 < main_camera.look_at.dot(ctris[i].circumcentre_normal))
+			if (0 < main_camera.look_at.dot(ctris[i].circumcentre_normal))
 				continue;
 
 			//if(false == disable_lighting)
 			//	ctris[i].draw_mat4();
 			//else
-				ctris[i].draw_colour3();
+			ctris[i].draw_colour3();
 		}
 
 		glEnd();
 
-		if(true == draw_tri_outlines)
+		if (true == draw_tri_outlines)
 		{
 			glDisable(GL_LIGHTING);
 
@@ -1053,7 +1034,7 @@ void draw_objects(void)
 
 			glBegin(GL_LINES);
 
-			for(size_t i = 0; i < ctris.size(); i++)
+			for (size_t i = 0; i < ctris.size(); i++)
 			{
 				ctris[i].draw_outline();
 			}
@@ -1071,39 +1052,49 @@ void draw_objects(void)
 	}
 	else
 	{
-		if(false == disable_lighting)
+		if (false == disable_lighting)
 			glEnable(GL_LIGHTING);
 		else
 			glDisable(GL_LIGHTING);
 
-		
+
 
 		glPointSize(4.0);
 
-		glBegin(GL_POINTS);
+		
 
+	
 
-		glColor3f(1, 1, 1);
+		glColor3f(0, 0.5, 1);
 
-		for (size_t i = 0; i < tess.dual_vertices.size(); i++)
+		for (size_t i = 0; i < tess.vngons.size(); i++)
 		{
-			glVertex3d(tess.dual_vertices[i].x, tess.dual_vertices[i].y, tess.dual_vertices[i].z);
+			glBegin(GL_LINES);
 
+			for (size_t j = 0; j < tess.vngons[i].v.size(); j++)
+			{
+				const vector_3 v0 = tess.dual_vertices[tess.vngons[i].v[j]];
+
+				glVertex3d(v0.x, v0.y, v0.z);
+			}
+
+			glEnd();
 		}
 
+
+
+
+
+		glBegin(GL_POINTS);
+		
 		glColor3f(0, 0, 0);
 
 		for (size_t i = 0; i < tess.vertices.size(); i++)
 		{
 			glVertex3d(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
-
 		}
 
-
 		glEnd();
-		
-		
-		
 
 
 
@@ -1111,7 +1102,10 @@ void draw_objects(void)
 
 
 
-		
+
+
+
+
 		glBegin(GL_TRIANGLES);
 
 
@@ -1121,9 +1115,9 @@ void draw_objects(void)
 
 
 
-		for(size_t i = 0; i < tess.dtris.size(); i++)
+		for (size_t i = 0; i < tess.dtris.size(); i++)
 		{
-			if(false == disable_lighting)
+			if (false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i0][0]);
 			else
 				glColor3f(materials[tess.dtris[i].i0][0], materials[tess.dtris[i].i0][1], materials[tess.dtris[i].i0][2]);
@@ -1131,7 +1125,7 @@ void draw_objects(void)
 			glNormal3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 
-			if(false == disable_lighting)
+			if (false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i1][0]);
 			else
 				glColor3f(materials[tess.dtris[i].i1][0], materials[tess.dtris[i].i1][1], materials[tess.dtris[i].i1][2]);
@@ -1139,7 +1133,7 @@ void draw_objects(void)
 			glNormal3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 
-			if(false == disable_lighting)
+			if (false == disable_lighting)
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i2][0]);
 			else
 				glColor3f(materials[tess.dtris[i].i2][0], materials[tess.dtris[i].i2][1], materials[tess.dtris[i].i2][2]);
@@ -1149,7 +1143,7 @@ void draw_objects(void)
 		}
 		glEnd();
 
-		if(true == draw_tri_outlines)
+		if (true == draw_tri_outlines)
 		{
 			glDisable(GL_LIGHTING);
 
@@ -1165,7 +1159,7 @@ void draw_objects(void)
 
 			glBegin(GL_TRIANGLES);
 
-			for(size_t i = 0; i < tess.dtris.size(); i++)
+			for (size_t i = 0; i < tess.dtris.size(); i++)
 			{
 				glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 				glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
@@ -1181,26 +1175,26 @@ void draw_objects(void)
 	}
 
 
-// draw selected vertex
-	if(false == disable_lighting)
+	// draw selected vertex
+	if (false == disable_lighting)
 		glEnable(GL_LIGHTING);
 	else
 		glDisable(GL_LIGHTING);
 
 
-	if(false == disable_lighting)
+	if (false == disable_lighting)
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, vertex_colour0);
 	else
 		glColor3f(vertex_colour0[0], vertex_colour0[1], vertex_colour0[2]);
 
 	glPushMatrix();
 	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size*1, vertex_slices*10, vertex_stacks*10);
+	glutSolidSphere(vertex_size * 1, vertex_slices * 10, vertex_stacks * 10);
 	glPopMatrix();
 
 
 
-	if(false == disable_lighting)
+	if (false == disable_lighting)
 	{
 		float temp_mat[4];
 		temp_mat[0] = 1 - materials[selected_vertex][0];
@@ -1220,22 +1214,22 @@ void draw_objects(void)
 
 	glPushMatrix();
 	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size*2, vertex_slices*10, vertex_stacks*10);
+	glutSolidSphere(vertex_size * 2, vertex_slices * 10, vertex_stacks * 10);
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size*3, vertex_slices*10, vertex_stacks*10);
+	glutSolidSphere(vertex_size * 3, vertex_slices * 10, vertex_stacks * 10);
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size*4, vertex_slices*10, vertex_stacks*10);
+	glutSolidSphere(vertex_size * 4, vertex_slices * 10, vertex_stacks * 10);
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size*5, vertex_slices*10, vertex_stacks*10);
+	glutSolidSphere(vertex_size * 5, vertex_slices * 10, vertex_stacks * 10);
 	glPopMatrix();
 
 	glDisable(GL_BLEND);
@@ -1247,7 +1241,7 @@ void draw_objects(void)
 
 
 	// If we do draw the axis at all, make sure not to draw its outline.
-	if(draw_axis)
+	if (draw_axis)
 	{
 		glDisable(GL_LIGHTING);
 
@@ -1255,11 +1249,11 @@ void draw_objects(void)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glLineWidth(outline_width*1.5f);
+		glLineWidth(outline_width * 1.5f);
 
 		glBegin(GL_LINES);
 
-//		glColor4f(0, 0, 0, 0.5);
+		//		glColor4f(0, 0, 0, 0.5);
 
 		const float opacity = 0.5;
 		const float length = 1.2;

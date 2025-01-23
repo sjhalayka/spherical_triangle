@@ -22,8 +22,7 @@ void delaunay_voronoi_on_2sphere::clear_meshes(void)
 	//dtri_adjacencies.clear();
 
 	dual_vertices.clear();
-	voronoi_edges.clear();
-	//vngons.clear();
+	vngons.clear();
 	//vngon_adjacencies.clear();
 }
 
@@ -80,7 +79,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		const custom_math::vector_3 W = vector_3(x, y, z).normalize();
 
-		//if(W.length() > 0.0001)
 		dual_vertices.push_back(W);
 
 		offset += 3;
@@ -91,34 +89,37 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 	{
 		tetgenio::vorofacet vf = out.vfacetlist[t];
 
-		bool is_valid = true;
+		bool is_valid_facet = true;
 
-		vector<vector_3> facet_vertices;
-		vector<sorted_indexed_edge> facet_edges;
+		vector<size_t> facet_indices;
 		
 		size_t edge_count = vf.elist[0];
 
 		for (size_t i = 1; i < edge_count + 1; i++)
 		{
-			size_t edge_index = vf.elist[i];
+			const size_t edge_index = vf.elist[i];
+			const size_t e1 = out.vedgelist[edge_index].v1;
+			const size_t e2 = out.vedgelist[edge_index].v2;
 
-			if (out.vedgelist[edge_index].v1 == -1 || out.vedgelist[edge_index].v2 == -1)
+			if (e1 == -1 || e2 == -1)
 			{
-				is_valid = false;
+				is_valid_facet = false;
 				break;
 			}
 
-			if(is_valid)
-			{
-				facet_vertices.push_back(out.vpointlist[out.vedgelist[edge_index].v1]);
-				facet_vertices.push_back(out.vpointlist[out.vedgelist[edge_index].v2]);
-				sorted_indexed_edge edge(out.vedgelist[edge_index].v1, out.vedgelist[edge_index].v2);
-				facet_edges.push_back(edge);
-			}
+			facet_indices.push_back(e1);
+			facet_indices.push_back(e2);
 		}
 
-		for (size_t j = 0; j < facet_edges.size(); j++)
-			voronoi_edges.push_back(facet_edges[j]);
+		if (is_valid_facet)
+		{
+			indexed_ngon ngon;
+
+			for (size_t j = 0; j < facet_indices.size(); j++)
+				ngon.v.push_back(facet_indices[j]);
+
+			vngons.push_back(ngon);
+		}
 	}
 
 
