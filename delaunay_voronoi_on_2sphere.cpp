@@ -68,9 +68,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		offset += 3;	
 	}
-	
-	tetgenio::vorofacet* vf = out.vfacetlist;
-	tetgenio::voroedge* ve = out.vedgelist;
+
 
 	offset = 0;
 
