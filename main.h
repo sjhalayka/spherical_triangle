@@ -2,7 +2,6 @@
 #ifndef main_H
 #define main_H
 
-#include "station_data.h"
 #include "delaunay_voronoi_on_2sphere.h"
 #include "uv_camera.h"
 
