@@ -42,37 +42,39 @@ using std::setprecision;
 // If you merge this code into a larger project, you should probably
 // at least wrap these global variables/functions in a namespace.
 
-vector<station_data> sd;
+//vector<station_data> sd;
 delaunay_voronoi_on_2sphere tess;
 vector<vector<float>> materials;
 vector<vector<size_t>> vertex_to_vertex;
 vector<indexed_curved_triangle> ctris;
 
 
-float global_min_temp, global_max_temp, global_mean_temp, global_mean_temp_std_dev;
-float global_min_trend, global_max_trend, global_mean_trend, global_mean_trend_std_dev;
+//float global_min_temp, global_max_temp, global_mean_temp, global_mean_temp_std_dev;
+//float global_min_trend, global_max_trend, global_mean_trend, global_mean_trend_std_dev;
 
 
 
+//
+//vector<float> local_mean_trends;
+//vector<float> local_trend_std_devs;
+//
+//size_t trend_minimum_samples = 20;
 
-vector<float> local_mean_trends;
-vector<float> local_trend_std_devs;
-
-size_t trend_minimum_samples = 20;
 
 
-bool spatial_interpolation = true;
 bool curved_triangles = true;
-
-size_t min_year, max_year, curr_year, trends_first_year, trends_last_year;
-size_t curr_month = 0;
 size_t selected_vertex = 0;
-char month_names[12][4] = {
-	"Jan", "Feb", "Mar", "Apr",
-	"May", "Jun", "Jul", "Aug",
-	"Sep", "Oct", "Nov", "Dec"
-};
 
+
+//
+//size_t min_year, max_year, curr_year, trends_first_year, trends_last_year;
+//size_t curr_month = 0;
+//char month_names[12][4] = {
+//	"Jan", "Feb", "Mar", "Apr",
+//	"May", "Jun", "Jul", "Aug",
+//	"Sep", "Oct", "Nov", "Dec"
+//};
+//
 
 
 
@@ -274,71 +276,6 @@ RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned 
 
 void generate_trend_materials(void)
 {
-	global_mean_trend = 0;
-
-	global_min_trend = 1000;
-	global_max_trend = -1000;
-	vector<float> global_trends;
-
-	for(size_t i = 0; i < sd.size(); i++)
-	{
-		vector<float> station_trends;
-		get_local_trends(sd, i, trends_first_year, trends_last_year, station_trends, trend_minimum_samples);
-
-		if(station_trends.size() == 0)
-		{
-			local_mean_trends[i] = -99;
-			continue;
-		}
-
-		local_mean_trends[i] = 0;
-
-#define DONT_AVERAGE_LOCAL_TRENDS
-
-		for(size_t j = 0; j < station_trends.size(); j++)
-		{
-
-#ifdef DONT_AVERAGE_LOCAL_TRENDS
-
-			if(station_trends[j] < global_min_trend)
-				global_min_trend = station_trends[j];
-
-			if(station_trends[j] > global_max_trend)
-				global_max_trend = station_trends[j];
-
-			global_trends.push_back(station_trends[j]);
-			global_mean_trend += station_trends[j];
-
-#endif
-
-			local_mean_trends[i] += station_trends[j];
-		}
-
-		local_mean_trends[i] /= static_cast<float>(station_trends.size());
-		local_trend_std_devs[i] = standard_deviation(station_trends);
-
-#ifndef DONT_AVERAGE_LOCAL_TRENDS
-
-		if(local_mean_trends[i] < global_min_trend)
-			global_min_trend = local_mean_trends[i];
-
-		if(local_mean_trends[i] > global_max_trend)
-			global_max_trend = local_mean_trends[i];
-
-		global_trends.push_back(local_mean_trends[i]);
-		global_mean_trend += local_mean_trends[i];
-
-#endif
-
-
-	}
-
-	if(0 != global_trends.size())
-	{
-		global_mean_trend /= static_cast<float>(global_trends.size());
-		global_mean_trend_std_dev = standard_deviation(global_trends);
-	}
-
 
 
 	static const double invalid_data_shade = 0.2;
@@ -347,9 +284,9 @@ void generate_trend_materials(void)
 
 	for(size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		if(-99 == local_mean_trends[i])
+		if(1)//-99 == local_mean_trends[i])
 		{
-			invalid_vertices.insert(i);
+			//invalid_vertices.insert(i);
 
 			materials[i][0] = invalid_data_shade;
 			materials[i][1] = invalid_data_shade;
@@ -358,16 +295,16 @@ void generate_trend_materials(void)
 		}
 		else
 		{
-			double trend = local_mean_trends[i];
+			//double trend = local_mean_trends[i];
 
-			static const double trend_cap = 0.02;
-			static RGB rgb;
+			//static const double trend_cap = 0.02;
+			//static RGB rgb;
 
-			if(trend > trend_cap)
-				trend = trend_cap;
+			//if(trend > trend_cap)
+			//	trend = trend_cap;
 
-			if(trend < -trend_cap)
-				trend = -trend_cap;
+			//if(trend < -trend_cap)
+			//	trend = -trend_cap;
 
 			//trend = -trend;
 
@@ -381,27 +318,27 @@ void generate_trend_materials(void)
 			//materials[i][2] = static_cast<double>(rgb.b)/255.0;
 			//materials[i][3] = 1;
 
-			if(0 == trend)
-			{
-				materials[i][0] = 1;
-				materials[i][1] = 1;
-				materials[i][2] = 1;
-				materials[i][3] = 1;
-			}
-			else if(trend > 0)
-			{
-				materials[i][0] = 1;
-				materials[i][1] = (1 - trend/trend_cap);
-				materials[i][2] = (1 - trend/trend_cap);
-				materials[i][3] = 1;
-			}
-			else
-			{
-				materials[i][0] = (1 + trend/trend_cap);
-				materials[i][1] = (1 + trend/trend_cap);
-				materials[i][2] = 1;
-				materials[i][3] = 1;
-			}
+			//if(0 == trend)
+			//{
+			//	materials[i][0] = 1;
+			//	materials[i][1] = 1;
+			//	materials[i][2] = 1;
+			//	materials[i][3] = 1;
+			//}
+			//else if(trend > 0)
+			//{
+			//	materials[i][0] = 1;
+			//	materials[i][1] = (1 - trend/trend_cap);
+			//	materials[i][2] = (1 - trend/trend_cap);
+			//	materials[i][3] = 1;
+			//}
+			//else
+			//{
+			//	materials[i][0] = (1 + trend/trend_cap);
+			//	materials[i][1] = (1 + trend/trend_cap);
+			//	materials[i][2] = 1;
+			//	materials[i][3] = 1;
+			//}
 
 			materials[i][0] *= 2;
 			materials[i][1] *= 2;
@@ -417,7 +354,7 @@ void generate_trend_materials(void)
 		}
 	}
 
-	if(true == spatial_interpolation)
+	if(1)//true == spatial_interpolation)
 	{
 		size_t last_invalid_vertices_size = invalid_vertices.size();
 
@@ -482,147 +419,13 @@ void generate_trend_materials(void)
 
 void generate_temperature_materials(void)
 {
-	//static const double invalid_data_shade = 0.75;
-
-	//global_min_temp = 1000;
-	//global_max_temp = -1000;
-	//vector<float> temperatures;
-
-	//set<size_t> invalid_vertices;
-
 	for(size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		materials[i][0] = 0.6666;
-		materials[i][1] = 0.6666;
-		materials[i][2] = 0.6666;
+		materials[i][0] = rand() / static_cast<double>(RAND_MAX);// 0.6666;
+		materials[i][1] = rand() / static_cast<double>(RAND_MAX);
+		materials[i][2] = rand() / static_cast<double>(RAND_MAX);
 		materials[i][3] = 1;
-
-
-		//if(sd[i].years.end() == sd[i].years.find(curr_year))
-		//{
-		//	if(true == spatial_interpolation)
-		//		invalid_vertices.insert(i);
-
-		//	materials[i][0] = invalid_data_shade;
-		//	materials[i][1] = invalid_data_shade;
-		//	materials[i][2] = invalid_data_shade;
-		//	materials[i][3] = 1;
-		//}
-		//else
-		//{
-		//	double temp = sd[i].years[curr_year].temperatures[curr_month];
-
-		//	if(temp == -99)
-		//	{
-		//		if(true == spatial_interpolation)
-		//			invalid_vertices.insert(i);
-
-		//		materials[i][0] = invalid_data_shade;
-		//		materials[i][1] = invalid_data_shade;
-		//		materials[i][2] = invalid_data_shade;
-		//		materials[i][3] = 1;
-		//	}
-		//	else
-		//	{
-		//		if(temp < global_min_temp)
-		//			global_min_temp = temp;
-
-		//		if(temp > global_max_temp)
-		//			global_max_temp = temp;
-
-		//		temperatures.push_back(temp);
-
-
-
-		//		static const double temp_cap = 30;
-		//		static RGB rgb;
-
-		//		if(temp > temp_cap)
-		//			temp = temp_cap;
-
-		//		if(temp < -temp_cap)
-		//			temp = -temp_cap;
-
-		//		temp = -temp;
-
-		//		temp += temp_cap;
-		//		temp /= temp_cap*2.0;
-
-		//		rgb = HSBtoRGB(static_cast<short unsigned int>(temp*260.0), 66, 100);
-
-		//		materials[i][0] = static_cast<double>(rgb.r)/255.0;
-		//		materials[i][1] = static_cast<double>(rgb.g)/255.0;
-		//		materials[i][2] = static_cast<double>(rgb.b)/255.0;
-		//		materials[i][3] = 1;
-		//	}
-		//}
 	}
-
-	//global_mean_temp = 0;
-
-	//for(size_t i = 0; i < temperatures.size(); i++)
-	//	global_mean_temp += temperatures[i];
-
-	//global_mean_temp /= static_cast<double>(temperatures.size());
-	//global_mean_temp_std_dev = standard_deviation(temperatures);
-
-
-
-	//if(true == spatial_interpolation)
-	//{
-	//	size_t last_invalid_vertices_size = invalid_vertices.size();
-
-	//	while(0 != invalid_vertices.size())
-	//	{
-	//		set<size_t> new_invalid_vertices;
-
-	//		for(set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
-	//		{
-	//			size_t valid_neighbour_count = 0;
-	//			
-	//			materials[*ci][0] = 0;
-	//			materials[*ci][1] = 0;
-	//			materials[*ci][2] = 0;
-	//			materials[*ci][3] = 0;
-
-	//			for(size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
-	//			{
-	//				if(invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
-	//				{
-	//					valid_neighbour_count++;
-
-	//					materials[*ci][0] += materials[vertex_to_vertex[*ci][j]][0];
-	//					materials[*ci][1] += materials[vertex_to_vertex[*ci][j]][1];
-	//					materials[*ci][2] += materials[vertex_to_vertex[*ci][j]][2];
-	//					materials[*ci][3] += materials[vertex_to_vertex[*ci][j]][3];
-	//				}
-	//			}
-
-	//			if(0 == valid_neighbour_count)
-	//			{
-	//				new_invalid_vertices.insert(*ci);
-	//				materials[*ci][0] = invalid_data_shade;
-	//				materials[*ci][1] = invalid_data_shade;
-	//				materials[*ci][2] = invalid_data_shade;
-	//				materials[*ci][3] = 1;
-	//			}
-	//			else
-	//			{
-	//				materials[*ci][0] /= valid_neighbour_count;
-	//				materials[*ci][1] /= valid_neighbour_count;
-	//				materials[*ci][2] /= valid_neighbour_count;
-	//				materials[*ci][3] /= valid_neighbour_count;
-	//			}
-	//		}
-
-	//		invalid_vertices.swap(new_invalid_vertices);
-
-	//		if(invalid_vertices.size() == last_invalid_vertices_size)
-	//			break;
-	//		else
-	//			last_invalid_vertices_size = invalid_vertices.size();
-	//	}
-	//}
 
 	if(true == curved_triangles)
 	{
@@ -1017,276 +820,20 @@ void keyboard_func(unsigned char key, int x, int y)
 {
 	switch(tolower(key))
 	{
-	case '1':
-		{
-			if(trends_first_year > min_year + 10)
-			{
-				trends_first_year -= 10;
-				generate_materials();
-			}
-			else if(trends_first_year != min_year)
-			{
-				trends_first_year = min_year;
-				generate_materials();
-			}
 
-			break;
-		}
-	case '2':
-		{
-			if(trends_first_year < max_year - 10)
-			{
-				trends_first_year += 10;
-
-				if(trends_first_year > trends_last_year)
-					trends_last_year = trends_first_year;
-
-				generate_materials();
-			}
-			else if(trends_first_year != max_year)
-			{
-				trends_first_year = max_year;
-
-				if(trends_first_year > trends_last_year)
-					trends_last_year = trends_first_year;
-
-				generate_materials();
-			}
-
-			break;
-		}
-	case '3':
-		{
-			if(trend_minimum_samples > 2)
-			{
-				trend_minimum_samples--;
-				generate_materials();
-			}
-
-			break;
-		}
-	case '4':
-		{
-			trend_minimum_samples++;
-			generate_materials();
-			break;
-		}
-
-	case 'q':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_year > min_year + 10)
-				{
-					curr_year -= 10;
-					generate_materials();
-				}
-				else if(curr_year != min_year)
-				{
-					curr_year = min_year;
-					generate_materials();
-				}
-			}
-			else
-			{
-				if(trends_first_year > min_year)
-				{
-					trends_first_year--;
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-	case 'w':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_year < max_year - 10)
-				{
-					curr_year += 10;
-					generate_materials();
-				}
-				else if(curr_year != max_year)
-				{
-					curr_year = max_year;
-					generate_materials();
-				}
-			}
-			else
-			{
-				if(trends_first_year < max_year)
-				{
-					trends_first_year++;
-
-					if(trends_first_year > trends_last_year)
-						trends_last_year = trends_first_year;
-
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-
-	case 'a':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_year > min_year)
-				{
-					curr_year--;
-					generate_materials();
-				}
-			}
-			else
-			{
-				if(trends_last_year > min_year + 10)
-				{
-					trends_last_year -= 10;
-
-					if(trends_last_year < trends_first_year)
-						trends_first_year = trends_last_year;
-
-					generate_materials();
-				}
-				else if(trends_last_year != min_year)
-				{
-					trends_last_year = min_year;
-
-					if(trends_last_year < trends_first_year)
-						trends_first_year = trends_last_year;
-
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-	case 's':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_year < max_year)
-				{
-					curr_year++;
-					generate_materials();
-				}
-			}
-			else
-			{
-				if(trends_last_year < max_year - 10)
-				{
-					trends_last_year += 10;
-					generate_materials();
-				}
-				else if(trends_last_year != max_year)
-				{
-					trends_last_year = max_year;
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-
-
-	case 'z':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_month > 0)
-				{
-					curr_month--;
-					generate_materials();
-				}
-				else if(curr_month == 0)
-				{
-					if(curr_year > min_year)
-					{
-						curr_month = 11;
-						curr_year--;
-						generate_materials();
-					}
-				}
-			}
-			else
-			{
-				if(trends_last_year > min_year)
-				{
-					trends_last_year--;
-
-					if(trends_last_year < trends_first_year)
-						trends_first_year = trends_last_year;
-
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-	
-	case 'x':
-		{
-			if(false == draw_trend_data)
-			{
-				if(curr_month < 11)
-				{
-					curr_month++;
-					generate_materials();
-				}
-				else if(curr_month == 11)
-				{
-					if(curr_year < max_year)
-					{
-						curr_month = 0;
-						curr_year++;
-						generate_materials();
-					}
-				}
-			}
-			else
-			{
-				if(trends_last_year < max_year)
-				{
-					trends_last_year++;
-					generate_materials();
-				}
-			}
-
-			break;
-		}
-
-	case 'd':
-		{
-			draw_trend_data = !draw_trend_data;
-			generate_materials();
-			break;
-		}
 	case 'f':
 		{
 			curved_triangles = !curved_triangles;
-			generate_materials();
+		//	generate_materials();
 			break;
 		}
 	case 'g':
 		{
-			spatial_interpolation = !spatial_interpolation;
-			generate_materials();
-			break;
-		}
-	case 'h':
-		{
-			draw_vertices = !draw_vertices;
-			generate_materials();
+			//spatial_interpolation = !spatial_interpolation;
+		//	generate_materials();
 			break;
 		}
 
-	case 'j':
-		{
-			draw_tri_outlines = !draw_tri_outlines;
-			break;
-		}
 	case 'k':
 		{
 			draw_axis = !draw_axis;
