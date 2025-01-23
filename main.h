@@ -1421,6 +1421,8 @@ void draw_objects(void)
 
 	glBegin(GL_LINES);
 
+	glColor3f(1, 0.5, 0);
+
 	//cout << tess.voronoi_edges.size() << endl;
 
 	for (size_t i = 0; i < tess.voronoi_edges.size(); i++)

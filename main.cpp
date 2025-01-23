@@ -43,16 +43,19 @@ int main(int argc, char **argv)
 
 
 
-	for (size_t x = 0; x < 50000; x++)
+	for (size_t x = 0; x < 10000; x++)
 	{
 		vector<vector_3> backup_points = tess.vertices;
 
-		for (size_t i = 0; i < 100 - 1; i++)
+		for (size_t i = 0; i < 100; i++)
 		{
 			vector_3 a(0, 0, 0);
 
-			for (size_t j = i + 1; j < 100; j++)
+			for (size_t j = 0; j < 100; j++)
 			{
+				if (i == j)
+					continue;
+
 				custom_math::vector_3 grav_dir = backup_points[j] - backup_points[i];
 
 				double distance = grav_dir.length();
