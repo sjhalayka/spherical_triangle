@@ -7,7 +7,7 @@ delaunay_voronoi_on_2sphere::delaunay_voronoi_on_2sphere(void)
 
 bool delaunay_voronoi_on_2sphere::produce_tessellations(void)
 {
-	if(0 == vertices.size())
+	if (0 == vertices.size())
 		return false;
 
 	return construct_delaunay_voronoi();
@@ -95,6 +95,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		size_t edge_count = vf.elist[0];
 
+		vector<int> firsts;
+		vector<int> seconds;
+
 		for (size_t i = 1; i < edge_count + 1; i++)
 		{
 			const size_t edge_index = vf.elist[i];
@@ -109,8 +112,26 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				break;
 			}
 
-			facet_indices.push_back(v1);
-			facet_indices.push_back(v2);
+			if (v1 == v2)
+			{
+				continue;
+			}
+
+			// If not found at all
+			if (firsts.end() == find(firsts.begin(), firsts.end(), v1))//&& seconds.end() == find(seconds.begin(), seconds.end(), v2))
+			{
+				firsts.push_back(v1);
+				
+				facet_indices.push_back(v1);
+				facet_indices.push_back(v2);
+			}
+			else if(seconds.end() == find(seconds.begin(), seconds.end(), v2))
+			{
+				seconds.push_back(v2);
+				
+				facet_indices.push_back(v1);
+				facet_indices.push_back(v2);
+			}
 		}
 
 		if (is_valid_facet)
@@ -121,7 +142,10 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			{
 				//	if (ngon.v.end() == find(ngon.v.begin(), ngon.v.end(), facet_indices[j]))
 				ngon.v.push_back(facet_indices[j]);
+
+				cout << facet_indices[j] << endl;
 			}
+			cout << endl;
 
 			vngons.push_back(ngon);
 		}
@@ -141,7 +165,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		vngons[i].v.push_back(vp[0].first);
 		vngons[i].v.push_back(vp[0].second);
-		
+
 		int previous_value = vp[0].second;
 
 		vp.erase(vp.begin());
@@ -154,7 +178,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				{
 					//if (vngons[i].v.end() == find(vngons[i].v.begin(), vngons[i].v.end(), vp[j].second))
 					vngons[i].v.push_back(vp[j].second);
-					
+
 					previous_value = vp[j].second;
 
 					vp.erase(vp.begin() + j);
@@ -217,7 +241,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		tri.i1 = j;
 		tri.i2 = i;
 
-		if (tri.i0 < vertices.size()  && tri.i1 < vertices.size() && tri.i2 < vertices.size() )
+		if (tri.i0 < vertices.size() && tri.i1 < vertices.size() && tri.i2 < vertices.size())
 			dtris.push_back(tri);
 
 		tri.i0 = l;

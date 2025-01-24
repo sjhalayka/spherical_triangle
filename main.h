@@ -226,7 +226,7 @@ void generate_temperature_materials(void)
 	{
 		for (size_t i = 0; i < ctris.size(); i++)
 			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
-	
+
 		for (size_t i = 0; i < vctris.size(); i++)
 			vctris[i].init_mats(tess_dual_vertices_materials[vctris[i].seed_i0], tess_dual_vertices_materials[vctris[i].seed_i1], tess_dual_vertices_materials[vctris[i].seed_i2]);
 	}
@@ -804,18 +804,11 @@ void draw_objects(void)
 		{
 			glBegin(GL_LINES);
 
-			const vector_3 v0 = tess.dual_vertices[tess.vngons[i].v[0]];
-			glVertex3d(v0.x, v0.y, v0.z);
-
-			for (size_t j = 1; j < tess.vngons[i].v.size(); j += 1)
+			for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
 			{
 				const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
 				glVertex3d(vj.x, vj.y, vj.z);
 			}
-
-			vector_3 v2 = tess.dual_vertices[tess.vngons[i].v[0]];
-
-			glVertex3f(v2.x, v2.y, v2.z);
 
 			glEnd();
 		}
@@ -887,7 +880,7 @@ void draw_objects(void)
 		glEnd();
 
 	}
-	else if(delaunay_mode == true && curved_triangles == false)
+	else if (delaunay_mode == true && curved_triangles == false)
 	{
 		if (false == disable_lighting)
 			glEnable(GL_LIGHTING);

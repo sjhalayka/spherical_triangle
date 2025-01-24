@@ -10954,6 +10954,8 @@ void tetgenmesh::hilbert_sort3(point* vertexarray, int arraysize, int e, int d,
   int p[9], w, e_w, d_w, k, ei, di;
   int n = 3, mask = 7;
 
+
+
   p[0] = 0;
   p[8] = arraysize;
 

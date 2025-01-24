@@ -380,10 +380,11 @@ public:
 			return true;
 		else if(v0 > rhs.v0)
 			return false;
-		// else first components are equal
 
-		if(v1 < rhs.v1)
+		if (v1 < rhs.v1)
 			return true;
+		else if (v1 > rhs.v1)
+			return false;
 
 		return false;
 	}
