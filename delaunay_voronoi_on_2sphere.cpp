@@ -66,7 +66,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		new_points.push_back(W);
 
-		offset += 3;	
+		offset += 3;
 	}
 
 
@@ -92,7 +92,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		bool is_valid_facet = true;
 
 		vector<size_t> facet_indices;
-		
+
 		size_t edge_count = vf.elist[0];
 
 		for (size_t i = 1; i < edge_count + 1; i++)
@@ -102,32 +102,73 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			const size_t v2 = out.vedgelist[edge_index].v2;
 
 			// Only use facets that are completely
-			// not infinite in terms of location
+			// finite in terms of location
 			if (v1 == -1 || v2 == -1)
 			{
 				is_valid_facet = false;
 				break;
 			}
 
-			//if(facet_indices.end() == find(facet_indices.begin(), facet_indices.end(), v1))
 			facet_indices.push_back(v1);
-
-			//if (facet_indices.end() == find(facet_indices.begin(), facet_indices.end(), v2))
 			facet_indices.push_back(v2);
 		}
-
-
-
 
 		if (is_valid_facet)
 		{
 			indexed_ngon ngon;
 
 			for (size_t j = 0; j < facet_indices.size(); j++)
+			{
+				//	if (ngon.v.end() == find(ngon.v.begin(), ngon.v.end(), facet_indices[j]))
 				ngon.v.push_back(facet_indices[j]);
+			}
 
 			vngons.push_back(ngon);
 		}
+	}
+
+	for (size_t i = 0; i < vngons.size(); i++)
+	{
+		vector<pair<int, int>> vp;
+
+		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
+		{
+			pair<int, int> p(vngons[i].v[j], vngons[i].v[j + 1]);
+			vp.push_back(p);
+		}
+
+		vngons[i].v.clear();
+
+		vngons[i].v.push_back(vp[0].first);
+		vngons[i].v.push_back(vp[0].second);
+		
+		int previous_value = vp[0].second;
+
+		vp.erase(vp.begin());
+
+		while (vp.size() > 0)
+		{
+			for (size_t j = 0; j < vp.size(); j++)
+			{
+				if (vp[j].first == previous_value)
+				{
+					//if (vngons[i].v.end() == find(vngons[i].v.begin(), vngons[i].v.end(), vp[j].second))
+					vngons[i].v.push_back(vp[j].second);
+					
+					previous_value = vp[j].second;
+
+					vp.erase(vp.begin() + j);
+
+					break;
+				}
+			}
+		}
+
+		//for (vector<pair<int, int>>::const_iterator ci = vp.begin(); ci != vp.end(); ci++)
+		//{
+		//	vngons[i].v.push_back(ci->first);
+		//	vngons[i].v.push_back(ci->second);
+		//}
 	}
 
 	for (size_t i = 0; i < vngons.size(); i++)
@@ -137,7 +178,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		for (size_t j = 0; j < vngons[i].v.size(); j++)
 			centre += dual_vertices[vngons[i].v[j]];
 
-		centre = centre / vngons[i].v.size();
+		centre = centre / static_cast<double>(vngons[i].v.size());
 
 		dual_vertices.push_back(centre);
 

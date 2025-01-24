@@ -16,6 +16,8 @@ using custom_math::sorted_indexed_triangle;
 using custom_math::sorted_indexed_edge;
 using custom_math::indexed_ngon;
 
+#include <utility>
+using std::pair;
 
 #include <vector>
 using std::vector;
