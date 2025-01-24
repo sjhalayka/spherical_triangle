@@ -143,9 +143,7 @@ int main(int argc, char **argv)
 	//local_trend_std_devs.resize(tess.vertices.size());
 
 
-	vector<float> mat(4, 0.666f);
-	materials.resize(tess.vertices.size(), mat);
-	
+
 	generate_materials();
 
 

@@ -24779,7 +24779,7 @@ void tetgenmesh::reconstructmesh()
 
   // Indentify subfaces from the mesh.
   // Create subfaces for hull faces (if they're not subface yet) and
-  //   interior faces which separate two different materials.
+  //   interior faces which separate two different tess_vertices_materials.
   eextras = in->numberoftetrahedronattributes;
   tetrahedrons->traversalinit();
   tetloop.tet = tetrahedrontraverse();

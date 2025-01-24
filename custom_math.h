@@ -541,7 +541,7 @@ public:
 		local_materials.resize(local_vertices.size(), empty_mat);
 	}
 
-	// Input are materials for local_vertices[0], [1], [2]
+	// Input are tess_vertices_materials for local_vertices[0], [1], [2]
 	void init_mats(const vector<float> &mat0, const vector<float> &mat1, const vector<float> &mat2)
 	{
 		if(4 != mat0.size() || 4 != mat1.size() || 4 != mat2.size())

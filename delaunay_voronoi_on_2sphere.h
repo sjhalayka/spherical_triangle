@@ -20,6 +20,9 @@ using custom_math::indexed_ngon;
 #include <vector>
 using std::vector;
 
+#include <algorithm>
+using std::swap;
+
 #include <deque>
 using std::deque;
 
@@ -55,10 +58,8 @@ public:
 	//vector<indexed_triangle> dtri_adjacencies; // 3 adjacent triangles per triangle
 
 	vector<vector_3> dual_vertices; // Voronoi vertices
-	//vector<sorted_indexed_edge> voronoi_edges;
-
 	vector<indexed_ngon> vngons; // Voronoi n-gons (cells)
-	
+	vector<indexed_triangle> vtris;
 
 	//vector<vector<size_t>> vngon_adjacencies; // Voronoi n-gon adjacencies
 

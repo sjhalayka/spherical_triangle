@@ -43,37 +43,20 @@ using std::setprecision;
 
 //vector<station_data> sd;
 delaunay_voronoi_on_2sphere tess;
-vector<vector<float>> materials;
+vector<vector<float>> tess_vertices_materials;
+
+vector<vector<float>> tess_dual_vertices_materials;
+
 vector<vector<size_t>> vertex_to_vertex;
+
 vector<indexed_curved_triangle> ctris;
+vector<indexed_curved_triangle> vctris;
 
 
-//float global_min_temp, global_max_temp, global_mean_temp, global_mean_temp_std_dev;
-//float global_min_trend, global_max_trend, global_mean_trend, global_mean_trend_std_dev;
-
-
-
-//
-//vector<float> local_mean_trends;
-//vector<float> local_trend_std_devs;
-//
-//size_t trend_minimum_samples = 20;
-
-
-
+bool delaunay_mode = true;
 bool curved_triangles = true;
 size_t selected_vertex = 0;
 
-
-//
-//size_t min_year, max_year, curr_year, trends_first_year, trends_last_year;
-//size_t curr_month = 0;
-//char month_names[12][4] = {
-//	"Jan", "Feb", "Mar", "Apr",
-//	"May", "Jun", "Jul", "Aug",
-//	"Sep", "Oct", "Nov", "Dec"
-//};
-//
 
 
 
@@ -140,138 +123,6 @@ void draw_objects(void);
 
 
 
-class RGB
-{
-public:
-	unsigned char r, g, b;
-};
-
-RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned char bri_percent)
-{
-	float R = 0.0f;
-	float G = 0.0f;
-	float B = 0.0f;
-
-	if (hue_degree > 359)
-		hue_degree = 359;
-
-	if (sat_percent > 100)
-		sat_percent = 100;
-
-	if (bri_percent > 100)
-		bri_percent = 100;
-
-	float hue_pos = 6.0f - ((static_cast<float>(hue_degree) / 359.0f) * 6.0f);
-
-	if (hue_pos >= 0.0f && hue_pos < 1.0f)
-	{
-		R = 255.0f;
-		G = 0.0f;
-		B = 255.0f * hue_pos;
-	}
-	else if (hue_pos >= 1.0f && hue_pos < 2.0f)
-	{
-		hue_pos -= 1.0f;
-
-		R = 255.0f - (255.0f * hue_pos);
-		G = 0.0f;
-		B = 255.0f;
-	}
-	else if (hue_pos >= 2.0f && hue_pos < 3.0f)
-	{
-		hue_pos -= 2.0f;
-
-		R = 0.0f;
-		G = 255.0f * hue_pos;
-		B = 255.0f;
-	}
-	else if (hue_pos >= 3.0f && hue_pos < 4.0f)
-	{
-		hue_pos -= 3.0f;
-
-		R = 0.0f;
-		G = 255.0f;
-		B = 255.0f - (255.0f * hue_pos);
-	}
-	else if (hue_pos >= 4.0f && hue_pos < 5.0f)
-	{
-		hue_pos -= 4.0f;
-
-		R = 255.0f * hue_pos;
-		G = 255.0f;
-		B = 0.0f;
-	}
-	else
-	{
-		hue_pos -= 5.0f;
-
-		R = 255.0f;
-		G = 255.0f - (255.0f * hue_pos);
-		B = 0.0f;
-	}
-
-	if (100 != sat_percent)
-	{
-		if (0 == sat_percent)
-		{
-			R = 255.0f;
-			G = 255.0f;
-			B = 255.0f;
-		}
-		else
-		{
-			if (255.0f != R)
-				R += ((255.0f - R) / 100.0f) * (100.0f - sat_percent);
-			if (255.0f != G)
-				G += ((255.0f - G) / 100.0f) * (100.0f - sat_percent);
-			if (255.0f != B)
-				B += ((255.0f - B) / 100.0f) * (100.0f - sat_percent);
-		}
-	}
-
-	if (100 != bri_percent)
-	{
-		if (0 == bri_percent)
-		{
-			R = 0.0f;
-			G = 0.0f;
-			B = 0.0f;
-		}
-		else
-		{
-			if (0.0f != R)
-				R *= static_cast<float>(bri_percent) / 100.0f;
-			if (0.0f != G)
-				G *= static_cast<float>(bri_percent) / 100.0f;
-			if (0.0f != B)
-				B *= static_cast<float>(bri_percent) / 100.0f;
-		}
-	}
-
-	if (R < 0.0f)
-		R = 0.0f;
-	else if (R > 255.0f)
-		R = 255.0f;
-
-	if (G < 0.0f)
-		G = 0.0f;
-	else if (G > 255.0f)
-		G = 255.0f;
-
-	if (B < 0.0f)
-		B = 0.0f;
-	else if (B > 255.0f)
-		B = 255.0f;
-
-	RGB rgb;
-
-	rgb.r = static_cast<unsigned char>(R);
-	rgb.g = static_cast<unsigned char>(G);
-	rgb.b = static_cast<unsigned char>(B);
-
-	return rgb;
-}
-
 
 void generate_trend_materials(void)
 {
@@ -283,74 +134,10 @@ void generate_trend_materials(void)
 
 	for (size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		if (1)//-99 == local_mean_trends[i])
-		{
-			//invalid_vertices.insert(i);
-
-			materials[i][0] = invalid_data_shade;
-			materials[i][1] = invalid_data_shade;
-			materials[i][2] = invalid_data_shade;
-			materials[i][3] = 1;
-		}
-		else
-		{
-			//double trend = local_mean_trends[i];
-
-			//static const double trend_cap = 0.02;
-			//static RGB rgb;
-
-			//if(trend > trend_cap)
-			//	trend = trend_cap;
-
-			//if(trend < -trend_cap)
-			//	trend = -trend_cap;
-
-			//trend = -trend;
-
-			//trend += trend_cap;
-			//trend /= trend_cap*2.0;
-
-			//rgb = HSBtoRGB(static_cast<short unsigned int>(trend*260.0), 66, 100);
-
-			//materials[i][0] = static_cast<double>(rgb.r)/255.0;
-			//materials[i][1] = static_cast<double>(rgb.g)/255.0;
-			//materials[i][2] = static_cast<double>(rgb.b)/255.0;
-			//materials[i][3] = 1;
-
-			//if(0 == trend)
-			//{
-			//	materials[i][0] = 1;
-			//	materials[i][1] = 1;
-			//	materials[i][2] = 1;
-			//	materials[i][3] = 1;
-			//}
-			//else if(trend > 0)
-			//{
-			//	materials[i][0] = 1;
-			//	materials[i][1] = (1 - trend/trend_cap);
-			//	materials[i][2] = (1 - trend/trend_cap);
-			//	materials[i][3] = 1;
-			//}
-			//else
-			//{
-			//	materials[i][0] = (1 + trend/trend_cap);
-			//	materials[i][1] = (1 + trend/trend_cap);
-			//	materials[i][2] = 1;
-			//	materials[i][3] = 1;
-			//}
-
-			materials[i][0] *= 2;
-			materials[i][1] *= 2;
-			materials[i][2] *= 2;
-
-			materials[i][0] += 1;
-			materials[i][1] += 1;
-			materials[i][2] += 1;
-
-			materials[i][0] /= 3.0f;
-			materials[i][1] /= 3.0f;
-			materials[i][2] /= 3.0f;
-		}
+		tess_vertices_materials[i][0] = invalid_data_shade;
+		tess_vertices_materials[i][1] = invalid_data_shade;
+		tess_vertices_materials[i][2] = invalid_data_shade;
+		tess_vertices_materials[i][3] = 1;
 	}
 
 	if (1)//true == spatial_interpolation)
@@ -365,10 +152,10 @@ void generate_trend_materials(void)
 			{
 				size_t valid_neighbour_count = 0;
 
-				materials[*ci][0] = 0;
-				materials[*ci][1] = 0;
-				materials[*ci][2] = 0;
-				materials[*ci][3] = 0;
+				tess_vertices_materials[*ci][0] = 0;
+				tess_vertices_materials[*ci][1] = 0;
+				tess_vertices_materials[*ci][2] = 0;
+				tess_vertices_materials[*ci][3] = 0;
 
 				for (size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
 				{
@@ -376,27 +163,27 @@ void generate_trend_materials(void)
 					{
 						valid_neighbour_count++;
 
-						materials[*ci][0] += materials[vertex_to_vertex[*ci][j]][0];
-						materials[*ci][1] += materials[vertex_to_vertex[*ci][j]][1];
-						materials[*ci][2] += materials[vertex_to_vertex[*ci][j]][2];
-						materials[*ci][3] += materials[vertex_to_vertex[*ci][j]][3];
+						tess_vertices_materials[*ci][0] += tess_vertices_materials[vertex_to_vertex[*ci][j]][0];
+						tess_vertices_materials[*ci][1] += tess_vertices_materials[vertex_to_vertex[*ci][j]][1];
+						tess_vertices_materials[*ci][2] += tess_vertices_materials[vertex_to_vertex[*ci][j]][2];
+						tess_vertices_materials[*ci][3] += tess_vertices_materials[vertex_to_vertex[*ci][j]][3];
 					}
 				}
 
 				if (0 == valid_neighbour_count)
 				{
 					new_invalid_vertices.insert(*ci);
-					materials[*ci][0] = invalid_data_shade;
-					materials[*ci][1] = invalid_data_shade;
-					materials[*ci][2] = invalid_data_shade;
-					materials[*ci][3] = 1;
+					tess_vertices_materials[*ci][0] = invalid_data_shade;
+					tess_vertices_materials[*ci][1] = invalid_data_shade;
+					tess_vertices_materials[*ci][2] = invalid_data_shade;
+					tess_vertices_materials[*ci][3] = 1;
 				}
 				else
 				{
-					materials[*ci][0] /= valid_neighbour_count;
-					materials[*ci][1] /= valid_neighbour_count;
-					materials[*ci][2] /= valid_neighbour_count;
-					materials[*ci][3] /= valid_neighbour_count;
+					tess_vertices_materials[*ci][0] /= valid_neighbour_count;
+					tess_vertices_materials[*ci][1] /= valid_neighbour_count;
+					tess_vertices_materials[*ci][2] /= valid_neighbour_count;
+					tess_vertices_materials[*ci][3] /= valid_neighbour_count;
 				}
 			}
 
@@ -412,7 +199,7 @@ void generate_trend_materials(void)
 	if (true == curved_triangles)
 	{
 		for (size_t i = 0; i < ctris.size(); i++)
-			ctris[i].init_mats(materials[ctris[i].seed_i0], materials[ctris[i].seed_i1], materials[ctris[i].seed_i2]);
+			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
 	}
 }
 
@@ -420,22 +207,37 @@ void generate_temperature_materials(void)
 {
 	for (size_t i = 0; i < tess.vertices.size(); i++)
 	{
-		materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
-		materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		materials[i][3] = 1;
+		tess_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
+		tess_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+		tess_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+		tess_vertices_materials[i][3] = 1;
+	}
+
+	for (size_t i = 0; i < tess.dual_vertices.size(); i++)
+	{
+		tess_dual_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
+		tess_dual_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+		tess_dual_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+		tess_dual_vertices_materials[i][3] = 1;
 	}
 
 	if (true == curved_triangles)
 	{
 		for (size_t i = 0; i < ctris.size(); i++)
-			ctris[i].init_mats(materials[ctris[i].seed_i0], materials[ctris[i].seed_i1], materials[ctris[i].seed_i2]);
+			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
+	
+		for (size_t i = 0; i < vctris.size(); i++)
+			vctris[i].init_mats(tess_dual_vertices_materials[vctris[i].seed_i0], tess_dual_vertices_materials[vctris[i].seed_i1], tess_dual_vertices_materials[vctris[i].seed_i2]);
 	}
 }
 
 
 void generate_materials(void)
 {
+	vector<float> mat(4, 0.666f);
+	tess_vertices_materials.resize(tess.vertices.size(), mat);
+	tess_dual_vertices_materials.resize(tess.dual_vertices.size(), mat);
+
 	generate_temperature_materials();
 }
 
@@ -828,8 +630,7 @@ void keyboard_func(unsigned char key, int x, int y)
 	}
 	case 'g':
 	{
-		//spatial_interpolation = !spatial_interpolation;
-	//	generate_materials();
+		delaunay_mode = !delaunay_mode;
 		break;
 	}
 
@@ -967,35 +768,60 @@ void draw_objects(void)
 
 
 
-
-	// Draw vertices
-	if (true == draw_vertices)
+	if (delaunay_mode)
 	{
-		for (size_t i = 0; i < tess.vertices.size(); i++)
+		// Draw vertices
+		if (true == draw_vertices)
 		{
-			if (false == disable_lighting)
+			for (size_t i = 0; i < tess.vertices.size(); i++)
 			{
-				float temp_mat[4];
-				temp_mat[0] = 1 - materials[i][0];
-				temp_mat[1] = 1 - materials[i][1];
-				temp_mat[2] = 1 - materials[i][2];
-				temp_mat[3] = 1;
+				if (false == disable_lighting)
+				{
+					float temp_mat[4];
+					temp_mat[0] = 1 - tess_vertices_materials[i][0];
+					temp_mat[1] = 1 - tess_vertices_materials[i][1];
+					temp_mat[2] = 1 - tess_vertices_materials[i][2];
+					temp_mat[3] = 1;
 
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &temp_mat[0]);
+					glMaterialfv(GL_FRONT, GL_DIFFUSE, &temp_mat[0]);
+				}
+				else
+					glColor3f(1 - tess_vertices_materials[i][0], 1 - tess_vertices_materials[i][1], 1 - tess_vertices_materials[i][2]);
+
+				glPushMatrix();
+				glTranslatef(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
+				glutSolidSphere(vertex_size, vertex_slices, vertex_stacks);
+				glPopMatrix();
 			}
-			else
-				glColor3f(1 - materials[i][0], 1 - materials[i][1], 1 - materials[i][2]);
+		}
+	}
+	else
+	{
+		glColor3f(0, 0.5, 1);
 
-			glPushMatrix();
-			glTranslatef(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
-			glutSolidSphere(vertex_size, vertex_slices, vertex_stacks);
-			glPopMatrix();
+		for (size_t i = 0; i < tess.vngons.size(); i++)
+		{
+			glBegin(GL_LINES);
+
+			const vector_3 v0 = tess.dual_vertices[tess.vngons[i].v[0]];
+			glVertex3d(v0.x, v0.y, v0.z);
+
+			for (size_t j = 1; j < tess.vngons[i].v.size(); j += 1)
+			{
+				const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
+				glVertex3d(vj.x, vj.y, vj.z);
+			}
+
+			vector_3 v2 = tess.dual_vertices[tess.vngons[i].v[0]];
+
+			glVertex3f(v2.x, v2.y, v2.z);
+
+			glEnd();
 		}
 	}
 
 
-
-	if (true == curved_triangles)
+	if (delaunay_mode == true && curved_triangles == true)
 	{
 		if (false == disable_lighting)
 			glEnable(GL_LIGHTING);
@@ -1048,45 +874,8 @@ void draw_objects(void)
 		}
 
 
-
-	}
-	else
-	{
-		if (false == disable_lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
-
-
-
-		glPointSize(4.0);
-
-		
-
-	
-
-		glColor3f(0, 0.5, 1);
-
-		for (size_t i = 0; i < tess.vngons.size(); i++)
-		{
-			glBegin(GL_LINES);
-
-			for (size_t j = 0; j < tess.vngons[i].v.size(); j++)
-			{
-				const vector_3 v0 = tess.dual_vertices[tess.vngons[i].v[j]];
-
-				glVertex3d(v0.x, v0.y, v0.z);
-			}
-
-			glEnd();
-		}
-
-
-
-
-
 		glBegin(GL_POINTS);
-		
+
 		glColor3f(0, 0, 0);
 
 		for (size_t i = 0; i < tess.vertices.size(); i++)
@@ -1096,51 +885,45 @@ void draw_objects(void)
 
 		glEnd();
 
+	}
+	else if(delaunay_mode == true && curved_triangles == false)
+	{
+		if (false == disable_lighting)
+			glEnable(GL_LIGHTING);
+		else
+			glDisable(GL_LIGHTING);
 
-
-
-
-
-
-
-
-
+		glPointSize(4.0);
 
 		glBegin(GL_TRIANGLES);
-
-
-
-
-
-
-
 
 		for (size_t i = 0; i < tess.dtris.size(); i++)
 		{
 			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i0][0]);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i0][0]);
 			else
-				glColor3f(materials[tess.dtris[i].i0][0], materials[tess.dtris[i].i0][1], materials[tess.dtris[i].i0][2]);
+				glColor3f(tess_vertices_materials[tess.dtris[i].i0][0], tess_vertices_materials[tess.dtris[i].i0][1], tess_vertices_materials[tess.dtris[i].i0][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 
 			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i1][0]);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i1][0]);
 			else
-				glColor3f(materials[tess.dtris[i].i1][0], materials[tess.dtris[i].i1][1], materials[tess.dtris[i].i1][2]);
+				glColor3f(tess_vertices_materials[tess.dtris[i].i1][0], tess_vertices_materials[tess.dtris[i].i1][1], tess_vertices_materials[tess.dtris[i].i1][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 
 			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &materials[tess.dtris[i].i2][0]);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i2][0]);
 			else
-				glColor3f(materials[tess.dtris[i].i2][0], materials[tess.dtris[i].i2][1], materials[tess.dtris[i].i2][2]);
+				glColor3f(tess_vertices_materials[tess.dtris[i].i2][0], tess_vertices_materials[tess.dtris[i].i2][1], tess_vertices_materials[tess.dtris[i].i2][2]);
 
 			glNormal3f(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 		}
+
 		glEnd();
 
 		if (true == draw_tri_outlines)
@@ -1172,7 +955,100 @@ void draw_objects(void)
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+
+
+
 	}
+	else if (delaunay_mode == false && curved_triangles == false)
+	{
+		if (false == disable_lighting)
+			glEnable(GL_LIGHTING);
+		else
+			glDisable(GL_LIGHTING);
+
+		glPointSize(4.0);
+
+		glBegin(GL_TRIANGLES);
+
+		for (size_t i = 0; i < tess.vtris.size(); i++)
+		{
+			if (false == disable_lighting)
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i0][0]);
+			else
+				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i0][0], tess_dual_vertices_materials[tess.vtris[i].i0][1], tess_dual_vertices_materials[tess.vtris[i].i0][2]);
+
+			glNormal3f(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+			glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+
+			if (false == disable_lighting)
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i1][0]);
+			else
+				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i1][0], tess_dual_vertices_materials[tess.vtris[i].i1][1], tess_dual_vertices_materials[tess.vtris[i].i1][2]);
+
+			glNormal3f(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+			glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+
+			if (false == disable_lighting)
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i2][0]);
+			else
+				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i2][0], tess_dual_vertices_materials[tess.vtris[i].i2][1], tess_dual_vertices_materials[tess.vtris[i].i2][2]);
+
+			glNormal3f(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+			glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+		}
+
+		glEnd();
+
+		{
+			glDisable(GL_LIGHTING);
+
+			glLineWidth(outline_width);
+
+			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+			glEnable(GL_ALPHA);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glBegin(GL_TRIANGLES);
+
+			for (size_t i = 0; i < tess.vtris.size(); i++)
+			{
+				glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+				glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+				glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+			}
+			glEnd();
+
+			glDisable(GL_BLEND);
+			glDisable(GL_ALPHA);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
+	else if (delaunay_mode == false && curved_triangles == true)
+	{
+		if (true == draw_tri_outlines)
+		{
+
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// draw selected vertex
@@ -1197,15 +1073,15 @@ void draw_objects(void)
 	if (false == disable_lighting)
 	{
 		float temp_mat[4];
-		temp_mat[0] = 1 - materials[selected_vertex][0];
-		temp_mat[1] = 1 - materials[selected_vertex][1];
-		temp_mat[2] = 1 - materials[selected_vertex][2];
+		temp_mat[0] = 1 - tess_vertices_materials[selected_vertex][0];
+		temp_mat[1] = 1 - tess_vertices_materials[selected_vertex][1];
+		temp_mat[2] = 1 - tess_vertices_materials[selected_vertex][2];
 		temp_mat[3] = selected_vertex_colour[3];
 
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, &temp_mat[0]);
 	}
 	else
-		glColor4f(1 - materials[selected_vertex][0], 1 - materials[selected_vertex][1], 1 - materials[selected_vertex][2], selected_vertex_colour[3]);
+		glColor4f(1 - tess_vertices_materials[selected_vertex][0], 1 - tess_vertices_materials[selected_vertex][1], 1 - tess_vertices_materials[selected_vertex][2], selected_vertex_colour[3]);
 
 
 	glEnable(GL_ALPHA);

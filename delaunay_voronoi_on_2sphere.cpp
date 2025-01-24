@@ -23,6 +23,7 @@ void delaunay_voronoi_on_2sphere::clear_meshes(void)
 
 	dual_vertices.clear();
 	vngons.clear();
+	vtris.clear();
 	//vngon_adjacencies.clear();
 }
 
@@ -84,7 +85,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		offset += 3;
 	}
 
-
 	for (size_t t = 0; t < out.numberofvfacets; t++)
 	{
 		tetgenio::vorofacet vf = out.vfacetlist[t];
@@ -98,18 +98,26 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		for (size_t i = 1; i < edge_count + 1; i++)
 		{
 			const size_t edge_index = vf.elist[i];
-			const size_t e1 = out.vedgelist[edge_index].v1;
-			const size_t e2 = out.vedgelist[edge_index].v2;
+			const size_t v1 = out.vedgelist[edge_index].v1;
+			const size_t v2 = out.vedgelist[edge_index].v2;
 
-			if (e1 == -1 || e2 == -1)
+			// Only use facets that are completely
+			// not infinite in terms of location
+			if (v1 == -1 || v2 == -1)
 			{
 				is_valid_facet = false;
 				break;
 			}
 
-			facet_indices.push_back(e1);
-			facet_indices.push_back(e2);
+			//if(facet_indices.end() == find(facet_indices.begin(), facet_indices.end(), v1))
+			facet_indices.push_back(v1);
+
+			//if (facet_indices.end() == find(facet_indices.begin(), facet_indices.end(), v2))
+			facet_indices.push_back(v2);
 		}
+
+
+
 
 		if (is_valid_facet)
 		{
@@ -122,6 +130,33 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
+	for (size_t i = 0; i < vngons.size(); i++)
+	{
+		vector_3 centre;
+
+		for (size_t j = 0; j < vngons[i].v.size(); j++)
+			centre += dual_vertices[vngons[i].v[j]];
+
+		centre = centre / vngons[i].v.size();
+
+		dual_vertices.push_back(centre);
+
+		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
+		{
+			size_t v0 = 0, v1 = 0;
+
+			v0 = vngons[i].v[j];
+			v1 = vngons[i].v[j + 1];
+
+			indexed_triangle tri;
+			tri.i0 = v0;
+			tri.i1 = v1;
+			tri.i2 = dual_vertices.size() - 1;
+
+			//if (tri.i0 < dual_vertices.size() && tri.i1 < dual_vertices.size() && tri.i2 < dual_vertices.size())
+			vtris.push_back(tri);
+		}
+	}
 
 	vertices = new_points;
 	vertices.pop_back();
@@ -167,6 +202,8 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		offset += 4;
 	}
+
+
 
 
 	return true;
