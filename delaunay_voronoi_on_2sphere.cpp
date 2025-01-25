@@ -230,17 +230,25 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			v0 = vngons[i].v[j];
 			v1 = vngons[i].v[j + 1];
 
-			// don't do dengenerate triangles
-			if (v0 == v1)
-				continue;
+			//// don't do dengenerate triangles
+			//if (v0 == v1)
+			//	continue;
 
 			indexed_triangle tri;
 			tri.i0 = v0;
 			tri.i1 = v1;
 			tri.i2 = dual_vertices.size() - 1;
 
+			vector_3 C = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
+			vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
+			vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
+			vector_3 N = A.cross(B);
+
+			if (N.dot(C) < 0)
+				swap(tri.i0, tri.i2);
+
 			if (tri.i0 < dual_vertices.size() && tri.i1 < dual_vertices.size() && tri.i2 < dual_vertices.size())
-			vtris.push_back(tri);
+				vtris.push_back(tri);
 		}
 	}
 

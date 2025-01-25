@@ -802,7 +802,7 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.vngons.size(); i++)
 		{
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 
 			for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
 			{
