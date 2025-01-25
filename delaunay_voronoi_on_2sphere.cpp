@@ -194,18 +194,39 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
-	vector<pair<size_t, size_t>> final_pairs;
+
 
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
+		vector<pair<size_t, size_t>> final_pairs;
+
 		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
 		{
 			pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
-			cout << "pairs: " << p.first << " " << p.second << endl;
+
+			if (p.first != p.second)
+			{
+				pair<size_t, size_t> p_backwards(p.second, p.first);
+
+				if (final_pairs.end() == find(final_pairs.begin(), final_pairs.end(), p) &&
+					final_pairs.end() == find(final_pairs.begin(), final_pairs.end(), p_backwards))
+				{
+					final_pairs.push_back(p);
+				}
+			}
+
+		//	cout << "pairs: " << p.first << " " << p.second << endl;
 		}
 
-		cout << endl;
+		for (size_t i = 0; i < final_pairs.size(); i++)
+		{
+			cout << "final pairs " << final_pairs[i].first << " " << final_pairs[i].second << endl;
+		}
+
+		 cout << endl;
 	}
+
+
 
 	cout << endl << endl;
 
