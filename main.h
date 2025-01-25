@@ -810,6 +810,12 @@ void draw_objects(void)
 				glVertex3d(vj.x, vj.y, vj.z);
 			}
 
+			vector_3 vj = tess.dual_vertices[tess.vngons[i].v[tess.vngons[i].v.size()]];
+			glVertex3d(vj.x, vj.y, vj.z);
+
+			vj = tess.dual_vertices[tess.vngons[i].v[0]];
+			glVertex3d(vj.x, vj.y, vj.z);
+
 			glEnd();
 		}
 	}
