@@ -115,9 +115,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			// Don't use degenerate edges
 			if (v1 == v2)
 			{
-				//is_valid_facet = false;
-				continue;
-				//break;
+				is_valid_facet = false;
+				//continue;
+				break;
 			}
 
 			// If not found at all
@@ -242,8 +242,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
 		{
 			pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
-
-
 			cout << "pairs: " << p.first << " " << p.second << endl;
 		}
 
