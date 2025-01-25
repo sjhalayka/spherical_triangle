@@ -802,19 +802,13 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.vngons.size(); i++)
 		{
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 
 			for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
 			{
 				const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
 				glVertex3d(vj.x, vj.y, vj.z);
 			}
-
-			vector_3 vj = tess.dual_vertices[tess.vngons[i].v[tess.vngons[i].v.size() - 1]];
-			glVertex3d(vj.x, vj.y, vj.z);
-
-			vj = tess.dual_vertices[tess.vngons[i].v[0]];
-			glVertex3d(vj.x, vj.y, vj.z);
 
 			glEnd();
 		}
