@@ -160,13 +160,13 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			{
 				if (vp[j].first == vp[j].second)
 				{
+					vngons[i].v.push_back(vp[j].first);
 					vngons[i].v.push_back(vp[j].second);
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
 					break;
 				}
-
-				if (vp[j].second == previous_value)
+				else if (vp[j].second == previous_value)
 				{
 					vngons[i].v.push_back(vp[j].first);
 					vngons[i].v.push_back(vp[j].second);
@@ -175,8 +175,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 					vp.erase(vp.begin() + j);
 					break;
 				}
-
-				if (vp[j].first == previous_value)
+				else if (vp[j].first == previous_value)
 				{
 					vngons[i].v.push_back(vp[j].second);
 					vngons[i].v.push_back(vp[j].first);
@@ -187,9 +186,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				}
 				else
 				{
-					vngons[i].v.push_back(vp[j].first);
-					//vngons[i].v.push_back(vp[j].second);
-
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
 					break;
@@ -198,6 +194,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
+	vector<pair<size_t, size_t>> final_pairs;
 
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
