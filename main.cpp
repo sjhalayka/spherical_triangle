@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv)
 {
-	const size_t num_points = 100;
+	const size_t num_points = 50;
 
 	tess.vertices.resize(num_points);
 
@@ -135,6 +135,82 @@ int main(int argc, char **argv)
 							tess.dtris[i].i2, tess.vertices[tess.dtris[i].i2],
 							subdivisions);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	cout << "Generating (approximately) spherical hexagons (out of triangles)." << endl;
+
+	// Get edge length data to make for variable subdivision
+	longest_edge = 0;
+
+	
+	for (size_t i = 0; i < tess.vtris.size(); i++)
+	{
+		sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
+		sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
+		sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
+
+		double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
+		double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
+		double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
+
+		if (dist0 > longest_edge)
+			longest_edge = dist0;
+
+		if (dist1 > longest_edge)
+			longest_edge = dist1;
+
+		if (dist2 > longest_edge)
+			longest_edge = dist2;
+	}
+
+
+
+	vctris.resize(tess.vtris.size());
+
+	for (size_t i = 0; i < tess.vtris.size(); i++)
+	{
+		sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
+		sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
+		sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
+
+		double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
+		double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
+		double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
+
+		double local_longest = dist0;
+
+		if (dist1 > local_longest)
+			local_longest = dist1;
+
+		if (dist2 > local_longest)
+			local_longest = dist2;
+
+		size_t subdivisions = ceil(static_cast<double>(max_subdivisions) * (local_longest / longest_edge));
+
+		vctris[i].init_geometry(tess.vtris[i].i0, tess.dual_vertices[tess.vtris[i].i0],
+			tess.vtris[i].i1, tess.dual_vertices[tess.vtris[i].i1],
+			tess.vtris[i].i2, tess.dual_vertices[tess.vtris[i].i2],
+			subdivisions);
+	}
+
+
+
+
+
+
+
+
 
 
 

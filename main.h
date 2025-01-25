@@ -201,6 +201,9 @@ void generate_trend_materials(void)
 	{
 		for (size_t i = 0; i < ctris.size(); i++)
 			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
+
+		for (size_t i = 0; i < vctris.size(); i++)
+			vctris[i].init_mats(tess_vertices_materials[vctris[i].seed_i0], tess_vertices_materials[vctris[i].seed_i1], tess_vertices_materials[vctris[i].seed_i2]);
 	}
 }
 
@@ -802,7 +805,7 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.vngons.size(); i++)
 		{
-			glBegin(GL_LINE_STRIP);
+			glBegin(GL_LINES);
 
 			for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
 			{
@@ -837,6 +840,9 @@ void draw_objects(void)
 		}
 
 		glEnd();
+
+
+
 
 		if (true == draw_tri_outlines)
 		{
@@ -1024,10 +1030,72 @@ void draw_objects(void)
 	}
 	else if (delaunay_mode == false && curved_triangles == true)
 	{
+		if (false == disable_lighting)
+			glEnable(GL_LIGHTING);
+		else
+			glDisable(GL_LIGHTING);
+
+		glBegin(GL_TRIANGLES);
+
+		for (size_t i = 0; i < vctris.size(); i++)
+		{
+			// Preliminary backface culling.
+			if (0 < main_camera.look_at.dot(vctris[i].circumcentre_normal))
+				continue;
+
+			//if(false == disable_lighting)
+			//	ctris[i].draw_mat4();
+			//else
+			vctris[i].draw_colour3();
+		}
+
+		glEnd();
+
+
+
+
 		if (true == draw_tri_outlines)
 		{
+			glDisable(GL_LIGHTING);
 
+			glLineWidth(2);
+
+			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+			glEnable(GL_ALPHA);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glBegin(GL_LINES);
+
+			for (size_t i = 0; i < vctris.size(); i++)
+			{
+				vctris[i].draw_outline();
+			}
+
+			glEnd();
+
+			glDisable(GL_BLEND);
+			glDisable(GL_ALPHA);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+
+
+		//glBegin(GL_POINTS);
+
+		//glColor3f(0, 0, 0);
+
+		//for (size_t i = 0; i < tess.vertices.size(); i++)
+		//{
+		//	glVertex3d(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
+		//}
+
+		//glEnd();
+
+
 	}
 
 
