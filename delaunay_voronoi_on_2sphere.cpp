@@ -150,18 +150,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			vp.push_back(p);
 		}
 
-		//pair<size_t, size_t> p(vngons[i].v[0], vngons[i].v[vngons[i].v.size() - 1]);
-		//vp.push_back(p);
-
-		//if (vp.size() < 2)
-		//	break;
-
-		cout << "vp size: " << vp.size() << endl;
-
 		vngons[i].v.clear();
 
 		int previous_value = vp[0].first;
-
 
 		while (vp.size() > 0)
 		{
@@ -169,7 +160,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			{
 				if (vp[j].first == vp[j].second)
 				{
-					vngons[i].v.push_back(vp[j].first);
 					vngons[i].v.push_back(vp[j].second);
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
@@ -186,7 +176,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 					break;
 				}
 
-				else  if (vp[j].first == previous_value)
+				if (vp[j].first == previous_value)
 				{
 					vngons[i].v.push_back(vp[j].second);
 					vngons[i].v.push_back(vp[j].first);
@@ -198,7 +188,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				else
 				{
 					vngons[i].v.push_back(vp[j].first);
-					vngons[i].v.push_back(vp[j].second);
+					//vngons[i].v.push_back(vp[j].second);
 
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
