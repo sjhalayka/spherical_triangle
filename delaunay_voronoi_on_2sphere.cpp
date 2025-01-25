@@ -199,8 +199,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				vp.push_back(p);
 			}
 
-			//sort(vp.begin(), vp.end());
-
 			//pair<size_t, size_t> p(vngons[i].v[0], vngons[i].v[vngons[i].v.size() - 1]);
 			//vp.push_back(p);
 
