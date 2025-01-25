@@ -113,9 +113,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			// Don't use degenerate edges
 			if (v1 == v2)
 			{
-				//is_valid_facet = false;
-				continue;
-				//break;
+				is_valid_facet = false;
+				//continue;
+				break;
 			}
 
 			facet_indices.push_back(v1);
@@ -167,6 +167,15 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		{
 			for (size_t j = 0; j < vp.size(); j++)
 			{
+				if (vp[j].first == vp[j].second)
+				{
+					vngons[i].v.push_back(vp[j].first);
+					vngons[i].v.push_back(vp[j].second);
+					previous_value = vp[j].second;
+					vp.erase(vp.begin() + j);
+					break;
+				}
+
 				if (vp[j].second == previous_value)
 				{
 					vngons[i].v.push_back(vp[j].first);
@@ -177,7 +186,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 					break;
 				}
 				 
-				if (vp[j].first == previous_value)
+				else  if (vp[j].first == previous_value)
 				{
 					vngons[i].v.push_back(vp[j].second);
 					vngons[i].v.push_back(vp[j].first);
@@ -188,6 +197,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				}
 				else
 				{
+					vngons[i].v.push_back(vp[j].first);
+					vngons[i].v.push_back(vp[j].second);
+					
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
 					break;
@@ -197,16 +209,16 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 	}
 
 
-	//for (size_t i = 0; i < vngons.size(); i++)
-	//{
-	//	for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
-	//	{
-	//		pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
-	//		cout << "pairs: " << p.first << " " << p.second << endl;
-	//	}
+	for (size_t i = 0; i < vngons.size(); i++)
+	{
+		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
+		{
+			pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
+			cout << "pairs: " << p.first << " " << p.second << endl;
+		}
 
-	//	cout << endl;
-	//}
+		cout << endl;
+	}
 
 	cout << endl << endl;
 
