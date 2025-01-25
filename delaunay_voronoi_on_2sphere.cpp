@@ -95,8 +95,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		size_t edge_count = vf.elist[0];
 
-		vector<int> firsts;
-		vector<int> seconds;
 
 		for (size_t i = 1; i < edge_count + 1; i++)
 		{
@@ -115,50 +113,13 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			// Don't use degenerate edges
 			if (v1 == v2)
 			{
-				is_valid_facet = false;
-				//continue;
-				break;
+				//is_valid_facet = false;
+				continue;
+				//break;
 			}
 
-			// If not found at all
-			if (firsts.end() == find(firsts.begin(), firsts.end(), v1) && seconds.end() == find(seconds.begin(), seconds.end(), v2))
-			{
-				firsts.push_back(v1);
-				seconds.push_back(v2);
-				
-				facet_indices.push_back(v1);
-				facet_indices.push_back(v2);
-				cout << "found neither" << endl;
-			}
-			// else if both found
-			else if (firsts.end() != find(firsts.begin(), firsts.end(), v1) && seconds.end() != find(seconds.begin(), seconds.end(), v2))
-			{
-				cout << "found both" << endl;
-
-				//facet_indices.push_back(v2);
-				//facet_indices.push_back(v1);
-
-				// Do nothing
-
-			}
-			else if (firsts.end() != find(firsts.begin(), firsts.end(), v1))
-			{
-				cout << "found first" << endl;
-
-				seconds.push_back(v1);
-
-				facet_indices.push_back(v2);
-				facet_indices.push_back(v1);
-			}
-			else if (seconds.end() != find(seconds.begin(), seconds.end(), v2))
-			{
-				cout << "found second" << endl;
-
-				firsts.push_back(v2);
-				
-				facet_indices.push_back(v2);
-				facet_indices.push_back(v1);
-			}
+			facet_indices.push_back(v1);
+			facet_indices.push_back(v2);
 		}
 
 		if (is_valid_facet)
@@ -179,74 +140,73 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
-	int x = 0;
-
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
-		bool found_matches = true;
-		
+		vector<pair<size_t, size_t>> vp;
 
-		
-		do
-		{
-			found_matches = false;
-
-			vector<pair<size_t, size_t>> vp;
-
-			for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
-			{
-				pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
-				vp.push_back(p);
-			}
-
-			//pair<size_t, size_t> p(vngons[i].v[0], vngons[i].v[vngons[i].v.size() - 1]);
-			//vp.push_back(p);
-
-			if (vp.size() < 2)
-				break;
-
-			cout << "vp size: " << vp.size() << endl;
-
-			vngons[i].v.clear();
-
-			int previous_value = vp[0].first;
-
-			while (vp.size() > 0)
-			{
-				for (size_t j = 0; j < vp.size(); j++)
-				{
-					if (vp[j].first == previous_value)
-					{
-						//if (vngons[i].v.end() == find(vngons[i].v.begin(), vngons[i].v.end(), vp[j].first))
-						vngons[i].v.push_back(vp[j].first);
-
-						previous_value = vp[j].second;
-
-						vp.erase(vp.begin() + j);
-
-						found_matches = true;
-
-						break;
-					}
-				}
-			}
-
-			x++;
-
-		} while (x < 100);
-	}
-
-	 
-	for (size_t i = 0; i < vngons.size(); i++)
-	{
 		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
 		{
 			pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
-			cout << "pairs: " << p.first << " " << p.second << endl;
+			vp.push_back(p);
 		}
 
-		cout << endl;
+		//pair<size_t, size_t> p(vngons[i].v[0], vngons[i].v[vngons[i].v.size() - 1]);
+		//vp.push_back(p);
+
+		if (vp.size() < 2)
+			break;
+
+		cout << "vp size: " << vp.size() << endl;
+
+		vngons[i].v.clear();
+
+		int previous_value = vp[0].first;
+
+
+		while (vp.size() > 0)
+		{
+			for (size_t j = 0; j < vp.size(); j++)
+			{
+				if (vp[j].second == previous_value)
+				{
+					vngons[i].v.push_back(vp[j].first);
+					vngons[i].v.push_back(vp[j].second);
+
+					previous_value = vp[j].second;
+					vp.erase(vp.begin() + j);
+					break;
+				}
+				 
+				if (vp[j].first == previous_value)
+				{
+					vngons[i].v.push_back(vp[j].second);
+					vngons[i].v.push_back(vp[j].first);
+
+					previous_value = vp[j].first;
+					vp.erase(vp.begin() + j);
+					break;
+				}
+				else
+				{
+					previous_value = vp[j].second;
+					vp.erase(vp.begin() + j);
+					break;
+				}
+			}
+		}
 	}
+
+
+	//for (size_t i = 0; i < vngons.size(); i++)
+	//{
+	//	for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
+	//	{
+	//		pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
+	//		cout << "pairs: " << p.first << " " << p.second << endl;
+	//	}
+
+	//	cout << endl;
+	//}
 
 	cout << endl << endl;
 

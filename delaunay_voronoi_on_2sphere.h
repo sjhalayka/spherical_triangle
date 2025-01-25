@@ -18,6 +18,7 @@ using custom_math::indexed_ngon;
 
 #include <utility>
 using std::pair;
+using std::make_pair;
 
 #include <vector>
 using std::vector;
