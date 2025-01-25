@@ -127,14 +127,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			indexed_ngon ngon;
 
 			for (size_t j = 0; j < facet_indices.size(); j++)
-			{
-				//if (ngon.v.end() == find(ngon.v.begin(), ngon.v.end(), facet_indices[j]))
 				ngon.v.push_back(facet_indices[j]);
-
-				cout << facet_indices[j] << endl;
-			}
-
-			cout << endl;
 
 			vngons.push_back(ngon);
 		}
@@ -160,6 +153,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			{
 				if (vp[j].first == vp[j].second)
 				{
+					// This will be culled later
 					vngons[i].v.push_back(vp[j].first);
 					vngons[i].v.push_back(vp[j].second);
 					previous_value = vp[j].second;
@@ -186,6 +180,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 				}
 				else
 				{
+					// Do nothing
 					previous_value = vp[j].second;
 					vp.erase(vp.begin() + j);
 					break;
@@ -225,15 +220,9 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			vngons[i].v.push_back(final_pairs[j].first);
 			vngons[i].v.push_back(final_pairs[j].second);
 
-			cout << "final pairs " << final_pairs[j].first << " " << final_pairs[j].second << endl;
+//			cout << "final pairs " << final_pairs[j].first << " " << final_pairs[j].second << endl;
 		}
-
-		 cout << endl;
 	}
-
-
-
-	cout << endl << endl;
 
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
@@ -253,21 +242,17 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			v0 = vngons[i].v[j];
 			v1 = vngons[i].v[j + 1];
 
-			//// don't do dengenerate triangles
-			//if (v0 == v1)
-			//	continue;
-
 			indexed_triangle tri;
 			tri.i0 = v0;
 			tri.i1 = v1;
 			tri.i2 = dual_vertices.size() - 1;
 
-			vector_3 C = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
+			vector_3 centre = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
 			vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
 			vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
-			vector_3 N = A.cross(B);
+			vector_3 normal = A.cross(B);
 
-			if (N.dot(C) < 0)
+			if (normal.dot(centre) < 0)
 				swap(tri.i0, tri.i2);
 
 			if (tri.i0 < dual_vertices.size() && tri.i1 < dual_vertices.size() && tri.i2 < dual_vertices.size())

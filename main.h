@@ -1072,7 +1072,7 @@ void draw_objects(void)
 
 			for (size_t i = 0; i < vctris.size(); i++)
 			{
-				vctris[i].draw_outline();
+				//vctris[i].draw_outline();
 			}
 
 			glEnd();
