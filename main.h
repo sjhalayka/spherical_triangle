@@ -893,7 +893,14 @@ void draw_objects(void)
 	glTranslatef(camera_x_transform, camera_y_transform, 0);
 
 
-
+	if (doing_screenshot)
+	{
+		glLineWidth(6.0);
+	}
+	else
+	{
+		glLineWidth(1.0);
+	}
 
 
 

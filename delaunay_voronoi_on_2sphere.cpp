@@ -114,7 +114,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			if (v1 == v2)
 			{
 				is_valid_facet = false;
-				//continue;
 				break;
 			}
 
