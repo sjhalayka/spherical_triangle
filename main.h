@@ -744,6 +744,28 @@ void passive_motion_func(int x, int y)
 	mouse_y = y;
 }
 
+
+
+
+vector_3 slerp(vector_3 s0, vector_3 s1, const double t)
+{
+	vector_3 s0_norm = s0;
+	s0_norm.normalize();
+
+	vector_3 s1_norm = s1;
+	s1_norm.normalize();
+
+	const double cos_angle = s0_norm.dot(s1_norm);
+	const double angle = acos(cos_angle);
+
+	const double p0_factor = sin((1 - t) * angle) / sin(angle);
+	const double p1_factor = sin(t * angle) / sin(angle);
+
+	return s0 * p0_factor + s1 * p1_factor;
+}
+
+
+
 void draw_objects(void)
 {
 	if (false == disable_lighting)
@@ -801,19 +823,51 @@ void draw_objects(void)
 	}
 	else
 	{
-		glColor3f(0, 0.5, 1);
-
-		for (size_t i = 0; i < tess.vngons.size(); i++)
+		if (curved_triangles == false)
 		{
-			glBegin(GL_LINES);
+			glColor3f(0, 0.5, 1);
 
-			for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
+			for (size_t i = 0; i < tess.vngons.size(); i++)
 			{
-				const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
-				glVertex3d(vj.x, vj.y, vj.z);
-			}
+				glBegin(GL_LINES);
 
-			glEnd();
+				for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
+				{
+					const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
+					glVertex3d(vj.x, vj.y, vj.z);
+				}
+
+				glEnd();
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < tess.vngons.size(); i++)
+			{
+				glColor3f(0, 0.5, 1);
+
+				glBegin(GL_LINE_STRIP);
+
+				for (size_t j = 0; j < tess.vngons[i].v.size() - 1; j += 1)
+				{
+					const vector_3 vj_start = tess.dual_vertices[tess.vngons[i].v[j]];
+					const vector_3 vj_end = tess.dual_vertices[tess.vngons[i].v[j + 1]];
+
+					const size_t step_count = 100;
+
+					const double step_size = 1.0 / step_count;
+
+					double t = 0;
+
+					for (size_t k = 0; k < step_count; k++, t += step_size)
+					{
+						vector_3 vj = slerp(vj_start, vj_end, t);
+						glVertex3d(vj.x, vj.y, vj.z);
+					}
+				}
+
+				glEnd();
+			}
 		}
 	}
 
