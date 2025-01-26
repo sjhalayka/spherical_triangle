@@ -95,7 +95,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		size_t edge_count = vf.elist[0];
 
-
+		// Enumerate the edges, and throw it all into one big array
 		for (size_t i = 1; i < edge_count + 1; i++)
 		{
 			const size_t edge_index = vf.elist[i];
@@ -132,6 +132,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
+	// For each n-gon, separate into pairs and then order them
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
 		vector<pair<size_t, size_t>> vp;
@@ -189,7 +190,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 	}
 
 
-
+	// For each n-gon, do culling
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
 		vector<pair<size_t, size_t>> final_pairs;
@@ -212,6 +213,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		vngons[i].v.clear();
 
+		// Fill in the end results
 		for (size_t j = 0; j < final_pairs.size(); j++)
 		{
 			vngons[i].v.push_back(final_pairs[j].first);
@@ -219,6 +221,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
+	// Use the end results to build the dual geometry
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
 		vector_3 centre;
@@ -242,10 +245,10 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			tri.i1 = v1;
 			tri.i2 = dual_vertices.size() - 1;
 
-			vector_3 centre = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
-			vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
-			vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
-			vector_3 normal = A.cross(B);
+			const vector_3 centre = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
+			const vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
+			const vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
+			const vector_3 normal = A.cross(B);
 
 			if (normal.dot(centre) < 0)
 				swap(tri.i0, tri.i2);
