@@ -7,11 +7,11 @@
 
 int main(int argc, char **argv)
 {
-	const size_t num_points = 50;
+	const size_t num_points = 60;
 
 	tess.vertices.resize(num_points);
 
-	cout << "Generating vertices from latitude and longitude data." << endl;
+	cout << "Generating pseudorandom vertices" << endl;
 
 	for (size_t i = 0; i < tess.vertices.size(); i++)
 		tess.vertices[i] = RandomUnitVector();
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
 
 
-	cout << "Generating triangulation of vertices via TetGen." << endl;
+	cout << "Generating triangulation of vertices via TetGen" << endl;
 
 	if(false == tess.produce_tessellations())
 		return -1;
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 	}
 
 
-	cout << "Generating (approximately) spherical triangles." << endl;
+	cout << "Generating (approximately) spherical triangles" << endl;
 
 	// Get edge length data to make for variable subdivision
 	size_t max_subdivisions = 5;
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 
 
 
-	cout << "Generating (approximately) spherical hexagons (out of triangles)." << endl;
+	cout << "Generating (approximately) spherical hexagons (out of triangles)" << endl;
 
 	// Get edge length data to make for variable subdivision
 	longest_edge = 0;

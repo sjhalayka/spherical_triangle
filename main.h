@@ -844,7 +844,7 @@ void draw_objects(void)
 		{
 			for (size_t i = 0; i < tess.vngons.size(); i++)
 			{
-				glColor3f(0, 0.5, 1);
+				glColor3f(0, 0.0, 0);
 
 				glBegin(GL_LINE_STRIP);
 
