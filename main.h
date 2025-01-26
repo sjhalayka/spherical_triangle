@@ -58,6 +58,7 @@ bool delaunay_mode = true;
 bool curved_triangles = true;
 size_t selected_vertex = 0;
 
+bool doing_screenshot = false;
 
 
 
@@ -123,6 +124,99 @@ void draw_objects(void);
 
 
 
+
+// TODO: fix camera bug where portrait mode crashes.
+void take_screenshot(size_t num_cams_wide, const char* filename, const bool reverse_rows = false)
+{
+	doing_screenshot = true;
+
+	// Set up Targa TGA image data.
+	unsigned char  idlength = 0;
+	unsigned char  colourmaptype = 0;
+	unsigned char  datatypecode = 2;
+	unsigned short int colourmaporigin = 0;
+	unsigned short int colourmaplength = 0;
+	unsigned char  colourmapdepth = 0;
+	unsigned short int x_origin = 0;
+	unsigned short int y_origin = 0;
+	unsigned short int px = win_x * num_cams_wide;
+	unsigned short int py = win_y * num_cams_wide;
+	unsigned char  bitsperpixel = 24;
+	unsigned char  imagedescriptor = 0;
+	vector<char> idstring;
+
+	size_t num_bytes = 3 * px * py;
+	vector<unsigned char> pixel_data(num_bytes);
+
+	// Adjust some parameters for large screen format.
+	bool temp_draw_control_list = draw_control_list;
+	draw_control_list = false;
+
+	float temp_outline_width = outline_width;
+	outline_width = 6;
+
+	vector<unsigned char> fbpixels(3 * win_x * win_y);
+
+	// Loop through subcameras.
+	for (size_t cam_num_x = 0; cam_num_x < num_cams_wide; cam_num_x++)
+	{
+		for (size_t cam_num_y = 0; cam_num_y < num_cams_wide; cam_num_y++)
+		{
+			// Set up camera, draw, then copy the frame buffer.
+			main_camera.Set_Large_Screenshot(num_cams_wide, cam_num_x, cam_num_y);
+			display_func();
+			glReadPixels(0, 0, win_x, win_y, GL_RGB, GL_UNSIGNED_BYTE, &fbpixels[0]);
+
+			// Copy pixels to large image.
+			for (GLint i = 0; i < win_x; i++)
+			{
+				for (GLint j = 0; j < win_y; j++)
+				{
+					size_t fb_index = 3 * (j * win_x + i);
+
+					size_t screenshot_x = cam_num_x * win_x + i;
+					size_t screenshot_y = cam_num_y * win_y + j;
+					size_t screenshot_index = 3 * (screenshot_y * (win_x * num_cams_wide) + screenshot_x);
+
+					pixel_data[screenshot_index] = fbpixels[fb_index + 2];
+					pixel_data[screenshot_index + 1] = fbpixels[fb_index + 1];
+					pixel_data[screenshot_index + 2] = fbpixels[fb_index];
+				}
+			}
+		}
+	}
+
+	// Restore the parameters.
+	draw_control_list = temp_draw_control_list;
+	outline_width = temp_outline_width;
+	main_camera.Set();
+
+	// Write Targa TGA file to disk.
+	ofstream out(filename, ios::binary);
+
+	if (!out.is_open())
+	{
+		cout << "Failed to open TGA file for writing: " << filename << endl;
+		return;
+	}
+
+	out.write(reinterpret_cast<char*>(&idlength), 1);
+	out.write(reinterpret_cast<char*>(&colourmaptype), 1);
+	out.write(reinterpret_cast<char*>(&datatypecode), 1);
+	out.write(reinterpret_cast<char*>(&colourmaporigin), 2);
+	out.write(reinterpret_cast<char*>(&colourmaplength), 2);
+	out.write(reinterpret_cast<char*>(&colourmapdepth), 1);
+	out.write(reinterpret_cast<char*>(&x_origin), 2);
+	out.write(reinterpret_cast<char*>(&y_origin), 2);
+	out.write(reinterpret_cast<char*>(&px), 2);
+	out.write(reinterpret_cast<char*>(&py), 2);
+	out.write(reinterpret_cast<char*>(&bitsperpixel), 1);
+	out.write(reinterpret_cast<char*>(&imagedescriptor), 1);
+
+	out.write(reinterpret_cast<char*>(&pixel_data[0]), num_bytes);
+
+	doing_screenshot = false;
+}
 
 
 void generate_trend_materials(void)
@@ -618,6 +712,8 @@ void display_func(void)
 
 
 	glFlush();
+
+	if(false == doing_screenshot)
 	glutSwapBuffers();
 }
 
@@ -651,6 +747,13 @@ void keyboard_func(unsigned char key, int x, int y)
 	case ';':
 	{
 		disable_lighting = !disable_lighting;
+		break;
+	}
+
+	case 'm':
+	{
+		take_screenshot(4, "out.tga");// , const bool reverse_rows = false)
+
 		break;
 	}
 

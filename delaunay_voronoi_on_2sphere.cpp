@@ -209,8 +209,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 					final_pairs.push_back(p);
 				}
 			}
-
-		//	cout << "pairs: " << p.first << " " << p.second << endl;
 		}
 
 		vngons[i].v.clear();
@@ -219,8 +217,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		{
 			vngons[i].v.push_back(final_pairs[j].first);
 			vngons[i].v.push_back(final_pairs[j].second);
-
-//			cout << "final pairs " << final_pairs[j].first << " " << final_pairs[j].second << endl;
 		}
 	}
 

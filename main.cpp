@@ -130,10 +130,11 @@ int main(int argc, char **argv)
 
 		size_t subdivisions = ceil(static_cast<double>(max_subdivisions)*(local_longest/longest_edge));
 
-		ctris[i].init_geometry(tess.dtris[i].i0, tess.vertices[tess.dtris[i].i0], 
-							tess.dtris[i].i1, tess.vertices[tess.dtris[i].i1], 
-							tess.dtris[i].i2, tess.vertices[tess.dtris[i].i2],
-							subdivisions);
+		ctris[i].init_geometry(
+			tess.dtris[i].i0, tess.vertices[tess.dtris[i].i0], 
+			tess.dtris[i].i1, tess.vertices[tess.dtris[i].i1], 
+			tess.dtris[i].i2, tess.vertices[tess.dtris[i].i2],
+			subdivisions);
 	}
 
 
@@ -198,7 +199,8 @@ int main(int argc, char **argv)
 
 		size_t subdivisions = ceil(static_cast<double>(max_subdivisions) * (local_longest / longest_edge));
 
-		vctris[i].init_geometry(tess.vtris[i].i0, tess.dual_vertices[tess.vtris[i].i0],
+		vctris[i].init_geometry(
+			tess.vtris[i].i0, tess.dual_vertices[tess.vtris[i].i0],
 			tess.vtris[i].i1, tess.dual_vertices[tess.vtris[i].i1],
 			tess.vtris[i].i2, tess.dual_vertices[tess.vtris[i].i2],
 			subdivisions);
