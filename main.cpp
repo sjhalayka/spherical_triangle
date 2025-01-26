@@ -247,20 +247,3 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-
-
-// Produces huge drop in 1991
-
-	// get number of valid stations per year
-	//map<size_t, size_t> year_count;
-
-	//for(size_t i = min_year; i <= max_year; i++)
-	//	year_count[i] = 0;
-
-	//for(size_t i = 0; i < sd.size(); i++)
-	//	for(map<short unsigned int, year_data>::const_iterator ci = sd[i].years.begin(); ci != sd[i].years.end(); ci++)
-	//		year_count[ci->first]++;
-
-	//for(map<size_t, size_t>::const_iterator ci = year_count.begin(); ci != year_count.end(); ci++)
-	//	cout << ci->first << ' ' << ci->second << endl;
-
