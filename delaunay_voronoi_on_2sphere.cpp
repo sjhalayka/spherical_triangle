@@ -85,6 +85,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		offset += 3;
 	}
 
+	// For each Voronoi facet
 	for (size_t t = 0; t < out.numberofvfacets; t++)
 	{
 		tetgenio::vorofacet vf = out.vfacetlist[t];
@@ -145,7 +146,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 
 		vngons[i].v.clear();
 
-		int previous_value = vp[0].first;
+		size_t previous_value = vp[0].first;
 
 		while (vp.size() > 0)
 		{
@@ -189,7 +190,6 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		}
 	}
 
-
 	// For each n-gon, do culling
 	for (size_t i = 0; i < vngons.size(); i++)
 	{
@@ -199,6 +199,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		{
 			pair<size_t, size_t> p(vngons[i].v[j], vngons[i].v[j + 1]);
 
+			// If not degenerate
 			if (p.first != p.second)
 			{
 				pair<size_t, size_t> p_backwards(p.second, p.first);
@@ -245,6 +246,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			tri.i1 = v1;
 			tri.i2 = dual_vertices.size() - 1;
 
+			// Make sure that winding order is consistent
 			const vector_3 centre = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
 			const vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
 			const vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
