@@ -894,92 +894,9 @@ void draw_objects(void)
 
 
 	if (doing_screenshot)
-	{
 		glLineWidth(6.0);
-	}
 	else
-	{
 		glLineWidth(1.0);
-	}
-
-
-
-	if (delaunay_mode)
-	{
-		// Draw vertices
-		if (true == draw_vertices)
-		{
-			for (size_t i = 0; i < tess.vertices.size(); i++)
-			{
-				if (false == disable_lighting)
-				{
-					float temp_mat[4];
-					temp_mat[0] = 1 - tess_vertices_materials[i][0];
-					temp_mat[1] = 1 - tess_vertices_materials[i][1];
-					temp_mat[2] = 1 - tess_vertices_materials[i][2];
-					temp_mat[3] = 1;
-
-					glMaterialfv(GL_FRONT, GL_DIFFUSE, &temp_mat[0]);
-				}
-				else
-					glColor3f(1 - tess_vertices_materials[i][0], 1 - tess_vertices_materials[i][1], 1 - tess_vertices_materials[i][2]);
-
-				glPushMatrix();
-				glTranslatef(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
-				glutSolidSphere(vertex_size, vertex_slices, vertex_stacks);
-				glPopMatrix();
-			}
-		}
-	}
-	else
-	{
-		if (curved_triangles == false)
-		{
-			glColor3f(0, 0.5, 1);
-
-			for (size_t i = 0; i < tess.vngons.size(); i++)
-			{
-				glBegin(GL_LINES);
-
-				for (size_t j = 0; j < tess.vngons[i].v.size(); j += 1)
-				{
-					const vector_3 vj = tess.dual_vertices[tess.vngons[i].v[j]];
-					glVertex3d(vj.x, vj.y, vj.z);
-				}
-
-				glEnd();
-			}
-		}
-		else
-		{
-			for (size_t i = 0; i < tess.vngons.size(); i++)
-			{
-				glColor3f(0, 0.0, 0);
-
-				glBegin(GL_LINE_STRIP);
-
-				for (size_t j = 0; j < tess.vngons[i].v.size() - 1; j += 1)
-				{
-					const vector_3 vj_start = tess.dual_vertices[tess.vngons[i].v[j]];
-					const vector_3 vj_end = tess.dual_vertices[tess.vngons[i].v[j + 1]];
-
-					const size_t step_count = 100;
-
-					const double step_size = 1.0 / step_count;
-
-					double t = 0;
-
-					for (size_t k = 0; k < step_count; k++, t += step_size)
-					{
-						vector_3 vj = slerp(vj_start, vj_end, t);
-						glVertex3d(vj.x, vj.y, vj.z);
-					}
-				}
-
-				glEnd();
-			}
-		}
-	}
 
 
 	if (delaunay_mode == true && curved_triangles == true)
@@ -992,63 +909,73 @@ void draw_objects(void)
 		glBegin(GL_TRIANGLES);
 
 		for (size_t i = 0; i < ctris.size(); i++)
-		{
-			// Preliminary backface culling.
-			if (0 < main_camera.look_at.dot(ctris[i].circumcentre_normal))
-				continue;
-
-			//if(false == disable_lighting)
-			//	ctris[i].draw_mat4();
-			//else
 			ctris[i].draw_colour3();
-		}
 
 		glEnd();
 
 
-
-
-		if (true == draw_tri_outlines)
+		for (size_t j = 0; j < ctris.size(); j += 1)
 		{
-			glDisable(GL_LIGHTING);
+			glColor3f(0, 0, 0);
 
-			glLineWidth(2);
-
-			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			glEnable(GL_ALPHA);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glBegin(GL_LINES);
-
-			for (size_t i = 0; i < ctris.size(); i++)
+			glBegin(GL_LINE_STRIP);
 			{
-				ctris[i].draw_outline();
+				const vector_3 vj_start = tess.vertices[ctris[j].seed_i0];
+				const vector_3 vj_end = tess.vertices[ctris[j].seed_i1];
+
+				const size_t step_count = 100;
+
+				const double step_size = 1.0 / step_count;
+
+				double t = 0;
+
+				for (size_t k = 0; k < step_count; k++, t += step_size)
+				{
+					vector_3 vj = slerp(vj_start, vj_end, t);
+					glVertex3d(vj.x, vj.y, vj.z);
+				}
 			}
 
 			glEnd();
+			glBegin(GL_LINE_STRIP);
+			{
+				const vector_3 vj_start = tess.vertices[ctris[j].seed_i1];
+				const vector_3 vj_end = tess.vertices[ctris[j].seed_i2];
 
-			glDisable(GL_BLEND);
-			glDisable(GL_ALPHA);
+				const size_t step_count = 100;
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				const double step_size = 1.0 / step_count;
+
+				double t = 0;
+
+				for (size_t k = 0; k < step_count; k++, t += step_size)
+				{
+					vector_3 vj = slerp(vj_start, vj_end, t);
+					glVertex3d(vj.x, vj.y, vj.z);
+				}
+			}
+
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+			{
+				const vector_3 vj_start = tess.vertices[ctris[j].seed_i2];
+				const vector_3 vj_end = tess.vertices[ctris[j].seed_i0];
+
+				const size_t step_count = 100;
+
+				const double step_size = 1.0 / step_count;
+
+				double t = 0;
+
+				for (size_t k = 0; k < step_count; k++, t += step_size)
+				{
+					vector_3 vj = slerp(vj_start, vj_end, t);
+					glVertex3d(vj.x, vj.y, vj.z);
+				}
+			}
+
+			glEnd();
 		}
-
-
-		glBegin(GL_POINTS);
-
-		glColor3f(0, 0, 0);
-
-		for (size_t i = 0; i < tess.vertices.size(); i++)
-		{
-			glVertex3d(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
-		}
-
-		glEnd();
-
 	}
 	else if (delaunay_mode == true && curved_triangles == false)
 	{
@@ -1100,10 +1027,6 @@ void draw_objects(void)
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			glEnable(GL_ALPHA);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 			glBegin(GL_TRIANGLES);
 
 			for (size_t i = 0; i < tess.dtris.size(); i++)
@@ -1113,9 +1036,6 @@ void draw_objects(void)
 				glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 			}
 			glEnd();
-
-			glDisable(GL_BLEND);
-			glDisable(GL_ALPHA);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
@@ -1172,10 +1092,6 @@ void draw_objects(void)
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			glEnable(GL_ALPHA);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 			glBegin(GL_TRIANGLES);
 
 			for (size_t i = 0; i < tess.vtris.size(); i++)
@@ -1185,9 +1101,6 @@ void draw_objects(void)
 				glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
 			}
 			glEnd();
-
-			glDisable(GL_BLEND);
-			glDisable(GL_ALPHA);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
@@ -1218,48 +1131,36 @@ void draw_objects(void)
 
 
 
+
 		if (true == draw_tri_outlines)
 		{
-			glDisable(GL_LIGHTING);
-
-			glLineWidth(2);
-
-			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			glEnable(GL_ALPHA);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glBegin(GL_LINES);
-
-			for (size_t i = 0; i < vctris.size(); i++)
+			for (size_t i = 0; i < tess.vngons.size(); i++)
 			{
-				//vctris[i].draw_outline();
+				glColor3f(0, 0.0, 0);
+
+				glBegin(GL_LINE_STRIP);
+
+				for (size_t j = 0; j < tess.vngons[i].v.size() - 1; j += 1)
+				{
+					const vector_3 vj_start = tess.dual_vertices[tess.vngons[i].v[j]];
+					const vector_3 vj_end = tess.dual_vertices[tess.vngons[i].v[j + 1]];
+
+					const size_t step_count = 100;
+
+					const double step_size = 1.0 / step_count;
+
+					double t = 0;
+
+					for (size_t k = 0; k < step_count; k++, t += step_size)
+					{
+						vector_3 vj = slerp(vj_start, vj_end, t);
+						glVertex3d(vj.x, vj.y, vj.z);
+					}
+				}
+
+				glEnd();
 			}
-
-			glEnd();
-
-			glDisable(GL_BLEND);
-			glDisable(GL_ALPHA);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-
-
-		//glBegin(GL_POINTS);
-
-		//glColor3f(0, 0, 0);
-
-		//for (size_t i = 0; i < tess.vertices.size(); i++)
-		//{
-		//	glVertex3d(tess.vertices[i].x, tess.vertices[i].y, tess.vertices[i].z);
-		//}
-
-		//glEnd();
-
-
 	}
 
 
@@ -1273,69 +1174,6 @@ void draw_objects(void)
 
 
 
-
-
-
-
-	// draw selected vertex
-	if (false == disable_lighting)
-		glEnable(GL_LIGHTING);
-	else
-		glDisable(GL_LIGHTING);
-
-
-	if (false == disable_lighting)
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, vertex_colour0);
-	else
-		glColor3f(vertex_colour0[0], vertex_colour0[1], vertex_colour0[2]);
-
-	glPushMatrix();
-	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size * 1, vertex_slices * 10, vertex_stacks * 10);
-	glPopMatrix();
-
-
-
-	if (false == disable_lighting)
-	{
-		float temp_mat[4];
-		temp_mat[0] = 1 - tess_vertices_materials[selected_vertex][0];
-		temp_mat[1] = 1 - tess_vertices_materials[selected_vertex][1];
-		temp_mat[2] = 1 - tess_vertices_materials[selected_vertex][2];
-		temp_mat[3] = selected_vertex_colour[3];
-
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, &temp_mat[0]);
-	}
-	else
-		glColor4f(1 - tess_vertices_materials[selected_vertex][0], 1 - tess_vertices_materials[selected_vertex][1], 1 - tess_vertices_materials[selected_vertex][2], selected_vertex_colour[3]);
-
-
-	glEnable(GL_ALPHA);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glPushMatrix();
-	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size * 2, vertex_slices * 10, vertex_stacks * 10);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size * 3, vertex_slices * 10, vertex_stacks * 10);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size * 4, vertex_slices * 10, vertex_stacks * 10);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(tess.vertices[selected_vertex].x, tess.vertices[selected_vertex].y, tess.vertices[selected_vertex].z);
-	glutSolidSphere(vertex_size * 5, vertex_slices * 10, vertex_stacks * 10);
-	glPopMatrix();
-
-	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA);
 
 
 
