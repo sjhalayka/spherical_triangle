@@ -65,6 +65,8 @@ vector_3 background_colour(0.6, 0.6, 0.6);
 float vertex_colour0[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 float selected_vertex_colour[] = { 1.0f, 1.0f, 1.0f, 0.2f };
 
+vector<vector_3> vgon_colours;
+
 
 float vertex_size = 0.0025f;
 size_t vertex_slices = 5;
@@ -673,6 +675,29 @@ void passive_motion_func(int x, int y)
 	mouse_y = y;
 }
 
+pair<int, int> mapToSphere(int image_width, int image_height, float x, float y, float z) 
+{
+	// Convert from [-1, 1] to [0, 1] for texture coordinates
+	float nx = x / std::sqrt(x * x + y * y + z * z);
+	float ny = y / std::sqrt(x * x + y * y + z * z);
+	float nz = z / std::sqrt(x * x + y * y + z * z);
+
+	// Compute texture coordinates (u, v)
+	float u = 0.5f + std::atan2(nz, nx) / (2.0 * pi);
+	float v = 0.5f - std::asin(ny) / pi;
+
+	// Map u, v to image coordinates
+	int tx = static_cast<int>(u * (image_width - 1));
+	int ty = static_cast<int>(v * (image_height - 1));
+
+	// Clamp to avoid out-of-bounds access
+	tx = std::max(0, std::min(tx, image_width - 1));
+	ty = std::max(0, std::min(ty, image_height - 1));
+
+	pair<int, int> ret(tx, ty);
+
+	return ret;
+}
 
 
 
@@ -903,6 +928,8 @@ if (delaunay_mode == false && curved_triangles == true)
 		//if (0 < main_camera.look_at.dot(vctris[i].circumcentre_normal))
 		//	continue;
 
+		glColor3d(vgon_colours[tess.vtri_vngon_index[i]].x, vgon_colours[tess.vtri_vngon_index[i]].y, vgon_colours[tess.vtri_vngon_index[i]].z);
+
 		if (tess.vtri_vngon_index[i] == selected_vertex)
 			glColor3f(0, 1, 0.0);
 		else
@@ -911,8 +938,8 @@ if (delaunay_mode == false && curved_triangles == true)
 
 			if (x.end() != find(x.begin(), x.end(), tess.vtri_vngon_index[i]))
 				glColor3f(1.0, 1.0, 0);
-			else
-				glColor3f(0.5, 0.5, 0.5);
+			//else
+			//	glColor3f(0.5, 0.5, 0.5);
 		}
 
 		vctris[i].draw_colour3();

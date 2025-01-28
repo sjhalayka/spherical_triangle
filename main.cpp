@@ -5,7 +5,7 @@
 
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	const size_t num_points = 60;
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
 				double distance = grav_dir.length();
 				grav_dir.normalize();
-				custom_math::vector_3 accel = -grav_dir/pow(distance, 1.0);
+				custom_math::vector_3 accel = -grav_dir / pow(distance, 1.0);
 
 				a += accel;
 			}
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 	cout << "Generating triangulation of vertices via TetGen" << endl;
 
-	if(false == tess.produce_tessellations())
+	if (false == tess.produce_tessellations())
 		return -1;
 
 	// Get vertex to vertex map
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
 	set<sorted_indexed_edge> edges;
 
-	for(size_t i = 0; i < tess.dtris.size(); i++)
+	for (size_t i = 0; i < tess.dtris.size(); i++)
 	{
 		sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
 		sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 		edges.insert(edge2);
 	}
 
-	for(set<sorted_indexed_edge>::const_iterator ci = edges.begin(); ci != edges.end(); ci++)
+	for (set<sorted_indexed_edge>::const_iterator ci = edges.begin(); ci != edges.end(); ci++)
 	{
 		vertex_to_vertex[ci->v0].push_back(ci->v1);
 		vertex_to_vertex[ci->v1].push_back(ci->v0);
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 
 	ctris.resize(tess.dtris.size());
 
-	for(size_t i = 0; i < tess.dtris.size(); i++)
+	for (size_t i = 0; i < tess.dtris.size(); i++)
 	{
 		//sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
 		//sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
@@ -128,8 +128,8 @@ int main(int argc, char **argv)
 		size_t subdivisions = 5;// ceil(static_cast<double>(max_subdivisions)* (local_longest / longest_edge));
 
 		ctris[i].init_geometry(
-			tess.dtris[i].i0, tess.vertices[tess.dtris[i].i0], 
-			tess.dtris[i].i1, tess.vertices[tess.dtris[i].i1], 
+			tess.dtris[i].i0, tess.vertices[tess.dtris[i].i0],
+			tess.dtris[i].i1, tess.vertices[tess.dtris[i].i1],
 			tess.dtris[i].i2, tess.vertices[tess.dtris[i].i2],
 			subdivisions);
 	}
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 	// Get edge length data to make for variable subdivision
 	//longest_edge = 0;
 
-	
+
 	//for (size_t i = 0; i < tess.vtris.size(); i++)
 	//{
 	//	sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
@@ -205,9 +205,20 @@ int main(int argc, char **argv)
 
 
 
+	vgon_colours.resize(tess.vngons.size(), vector_3(1, 0, 0));
 
+	for (size_t i = 0; i < vgon_colours.size(); i++)
+	{
+		vector_3 location = tess.dual_centres[i];
 
+		pair<int, int> pixel_coords = mapToSphere(100, 100, location.x, location.y, location.z);
 
+		// get colour from image
+
+		vgon_colours[i].x = rand() / static_cast<double>(RAND_MAX);
+		vgon_colours[i].y = rand() / static_cast<double>(RAND_MAX);
+		vgon_colours[i].z = rand() / static_cast<double>(RAND_MAX);
+	}
 
 
 
