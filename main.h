@@ -915,7 +915,7 @@ if (delaunay_mode == false && curved_triangles == true)
 				glColor3f(0.5, 0.5, 0.5);
 		}
 
-		vctris[i].draw_colour3(tess.dual_centres[i]);
+		vctris[i].draw_colour3();
 	}
 
 	glEnd();

@@ -531,41 +531,41 @@ public:
 
 
 
-	void draw_colour3(const vector_3 &input_normal)
+	void draw_colour3(void)
 	{
 		for (size_t i = 0; i < local_triangles.size(); i++)
 		{
-			//indexed_triangle tri;
-			//tri.i0 = local_triangles[i].i0;
-			//tri.i1 = local_triangles[i].i1;
-			//tri.i2 = local_triangles[i].i2;
+			indexed_triangle tri;
+			tri.i0 = local_triangles[i].i0;
+			tri.i1 = local_triangles[i].i1;
+			tri.i2 = local_triangles[i].i2;
 
-			//// Make sure that winding order is consistent
-			//const vector_3 centre = (local_vertices[tri.i0] + local_vertices[tri.i1] + local_vertices[tri.i2]) * 1 / 3.0;
-			//const vector_3 A = local_vertices[tri.i2] - local_vertices[tri.i0];
-			//const vector_3 B = local_vertices[tri.i2] - local_vertices[tri.i1];
-			//const vector_3 normal = A.cross(B);
+			// Make sure that winding order is consistent
+			const vector_3 centre = (local_vertices[tri.i0] + local_vertices[tri.i1] + local_vertices[tri.i2]) * 1 / 3.0;
+			const vector_3 A = local_vertices[tri.i2] - local_vertices[tri.i0];
+			const vector_3 B = local_vertices[tri.i2] - local_vertices[tri.i1];
+			const vector_3 normal = A.cross(B);
 
-			//bool do_swap = false;
+			bool do_swap = false;
 
-			//if (normal.dot(input_normal) > 0)
-			//	do_swap = false;// true;
+			if (normal.dot(local_vertices[local_triangles[i].i0]) < 0)
+				do_swap =  true;
 
-			//if (do_swap)
-			//{
+			if (do_swap)
+			{
 
 			//// to do: reverse the winding order once you figure it out
 
-			//	glVertex3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
-			//	glVertex3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
-			//	glVertex3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
-			//}
-			//else
-			//{
+				glVertex3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
+				glVertex3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
+				glVertex3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
+			}
+			else
+			{
 				glVertex3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
 				glVertex3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
 				glVertex3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
-			//}
+			}
 
 
 			//glNormal3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
