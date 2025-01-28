@@ -12,7 +12,17 @@ using custom_math::d_3;
 using custom_math::d_3_sq;
 using custom_math::sorted_indexed_edge;
 
+
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+
+
+
 #include <ctime>
+
+
 
 
 #include <sstream>
@@ -685,6 +695,8 @@ pair<int, int> mapToSphere(int image_width, int image_height, float x, float y, 
 	// Compute texture coordinates (u, v)
 	float u = 0.5f + std::atan2(nz, nx) / (2.0 * pi);
 	float v = 0.5f - std::asin(ny) / pi;
+
+	u = 1 - u;
 
 	// Map u, v to image coordinates
 	int tx = static_cast<int>(u * (image_width - 1));

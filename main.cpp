@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-	const size_t num_points = 60;
+	const size_t num_points = 5000;
 
 	tess.vertices.resize(num_points);
 
@@ -17,8 +17,10 @@ int main(int argc, char** argv)
 		tess.vertices[i] = RandomUnitVector();
 
 
-	for (size_t x = 0; x < 10000; x++)
+	for (size_t x = 0; x < 100; x++)
 	{
+		cout << x << " " << 100 << endl;
+
 		vector<vector_3> backup_points = tess.vertices;
 
 		for (size_t i = 0; i < num_points; i++)
@@ -203,26 +205,31 @@ int main(int argc, char** argv)
 			subdivisions);
 	}
 
-
-
 	vgon_colours.resize(tess.vngons.size(), vector_3(1, 0, 0));
 
-	for (size_t i = 0; i < vgon_colours.size(); i++)
+
+
+	int image_width = 0;
+	int image_height = 0;
+	unsigned char* image_data = stbi_load("map.png", &image_width, &image_height, NULL, 4);
+
+	if (image_data != NULL)
 	{
-		vector_3 location = tess.dual_centres[i];
+		cout << "read map.png" << endl;
 
-		pair<int, int> pixel_coords = mapToSphere(100, 100, location.x, location.y, location.z);
+		for (size_t i = 0; i < vgon_colours.size(); i++)
+		{
+			const vector_3 location = tess.dual_centres[i];
+			const pair<int, int> pixel_coords = mapToSphere(image_width, image_height, location.x, location.y, location.z);
+			const size_t index = 4*(pixel_coords.second * image_width + pixel_coords.first);
 
-		// get colour from image
+			vgon_colours[i].x = image_data[index + 0] / 255.0;
+			vgon_colours[i].y = image_data[index + 1] / 255.0;
+			vgon_colours[i].z = image_data[index + 2] / 255.0;
+		}
 
-		vgon_colours[i].x = rand() / static_cast<double>(RAND_MAX);
-		vgon_colours[i].y = rand() / static_cast<double>(RAND_MAX);
-		vgon_colours[i].z = rand() / static_cast<double>(RAND_MAX);
+		stbi_image_free(image_data);
 	}
-
-
-
-
 
 
 
