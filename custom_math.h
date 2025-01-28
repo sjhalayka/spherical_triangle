@@ -405,8 +405,7 @@ protected:
 	set<sorted_indexed_edge> local_curved_outline_edges;
 	vector<indexed_triangle> local_triangles;
 
-	vector<vector<float>> local_materials;
-	vector<indexed_triangle> mat_blend_ops;
+
 
 public:
 	size_t seed_i0, seed_i1, seed_i2; // vertices indices from main mesh, for helping get seed mat data
@@ -420,9 +419,6 @@ public:
 		local_vertices.clear();
 		local_curved_outline_edges.clear();
 		local_triangles.clear();
-		local_materials.clear();
-		mat_blend_ops.clear();
-
 
 		circumcentre_normal = v0;
 		circumcentre_normal = circumcentre_normal + v1;
@@ -476,12 +472,6 @@ public:
 				mid_point.normalize(); // Project onto 2-sphere
 				local_vertices.push_back(mid_point);
 
-				indexed_triangle blend_op;
-				blend_op.i0 = new_local_vertex_index;
-				blend_op.i1 = ci->v0;
-				blend_op.i2 = ci->v1;
-				mat_blend_ops.push_back(blend_op);
-
 				// If edge is part of the curved triangle edge, split it into two subedges
 				if(local_curved_outline_edges.end() != local_curved_outline_edges.find(*ci))
 				{
@@ -533,65 +523,25 @@ public:
 
 			new_local_triangles.swap(local_triangles);
 
-			// for each triangle
-			// - for each edge in CCW order, get corresponding new vertices
-			// - use these new vertices and existing vertices to make 4 subtriangles
 		}
 
-		vector<float> empty_mat(4, 0.0f);
-		local_materials.resize(local_vertices.size(), empty_mat);
 	}
 
-	// Input are tess_vertices_materials for local_vertices[0], [1], [2]
-	void init_mats(const vector<float> &mat0, const vector<float> &mat1, const vector<float> &mat2)
-	{
-		if(4 != mat0.size() || 4 != mat1.size() || 4 != mat2.size())
-			return;
 
-		local_materials[0] = mat0;
-		local_materials[1] = mat1;
-		local_materials[2] = mat2;
-
-		for(size_t i = 0; i < mat_blend_ops.size(); i++)
-		{
-			local_materials[mat_blend_ops[i].i0][0] = 0.5f*(local_materials[mat_blend_ops[i].i1][0] + local_materials[mat_blend_ops[i].i2][0]);
-			local_materials[mat_blend_ops[i].i0][1] = 0.5f*(local_materials[mat_blend_ops[i].i1][1] + local_materials[mat_blend_ops[i].i2][1]);
-			local_materials[mat_blend_ops[i].i0][2] = 0.5f*(local_materials[mat_blend_ops[i].i1][2] + local_materials[mat_blend_ops[i].i2][2]);
-			local_materials[mat_blend_ops[i].i0][3] = 0.5f*(local_materials[mat_blend_ops[i].i1][3] + local_materials[mat_blend_ops[i].i2][3]);
-		}
-	}
-
-	void draw_mat4(void)
-	{
-		for(size_t i = 0; i < local_triangles.size(); i++)
-		{
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, &local_materials[local_triangles[i].i0][0]);
-			glNormal3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
-			glVertex3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
-
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, &local_materials[local_triangles[i].i1][0]);
-			glNormal3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
-			glVertex3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
-
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, &local_materials[local_triangles[i].i2][0]);
-			glNormal3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
-			glVertex3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
-		}
-	}
 
 	void draw_colour3(void)
 	{
 		for(size_t i = 0; i < local_triangles.size(); i++)
 		{
-			glColor3d(local_materials[local_triangles[i].i0][0], local_materials[local_triangles[i].i0][1], local_materials[local_triangles[i].i0][2]);
+			//glColor3d(local_materials[local_triangles[i].i0][0], local_materials[local_triangles[i].i0][1], local_materials[local_triangles[i].i0][2]);
 			glNormal3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
 			glVertex3d(local_vertices[local_triangles[i].i0].x, local_vertices[local_triangles[i].i0].y, local_vertices[local_triangles[i].i0].z);
 
-			glColor3d(local_materials[local_triangles[i].i1][0], local_materials[local_triangles[i].i1][1], local_materials[local_triangles[i].i1][2]);
+			//glColor3d(local_materials[local_triangles[i].i1][0], local_materials[local_triangles[i].i1][1], local_materials[local_triangles[i].i1][2]);
 			glNormal3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
 			glVertex3d(local_vertices[local_triangles[i].i1].x, local_vertices[local_triangles[i].i1].y, local_vertices[local_triangles[i].i1].z);
 
-			glColor3d(local_materials[local_triangles[i].i2][0], local_materials[local_triangles[i].i2][1], local_materials[local_triangles[i].i2][2]);
+			//glColor3d(local_materials[local_triangles[i].i2][0], local_materials[local_triangles[i].i2][1], local_materials[local_triangles[i].i2][2]);
 			glNormal3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
 			glVertex3d(local_vertices[local_triangles[i].i2].x, local_vertices[local_triangles[i].i2].y, local_vertices[local_triangles[i].i2].z);
 		}

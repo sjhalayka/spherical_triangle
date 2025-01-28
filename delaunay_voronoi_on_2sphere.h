@@ -63,8 +63,10 @@ public:
 	vector<vector_3> dual_vertices; // Voronoi vertices
 	vector<indexed_ngon> vngons; // Voronoi n-gons (cells)
 	vector<indexed_triangle> vtris;
+	vector<size_t> vtri_vngon_index;
+	vector<vector_3> dual_centres;
 
-	//vector<vector<size_t>> vngon_adjacencies; // Voronoi n-gon adjacencies
+	vector<vector<size_t>> vngon_adjacencies; // Voronoi n-gon adjacencies
 
 public://protected:
 	vector<vector_3> dtri_normals; // Temporary triangle normals

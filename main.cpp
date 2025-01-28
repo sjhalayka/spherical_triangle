@@ -17,9 +17,6 @@ int main(int argc, char **argv)
 		tess.vertices[i] = RandomUnitVector();
 
 
-
-
-
 	for (size_t x = 0; x < 10000; x++)
 	{
 		vector<vector_3> backup_points = tess.vertices;
@@ -214,15 +211,6 @@ int main(int argc, char **argv)
 
 
 
-
-
-
-	//local_mean_trends.resize(tess.vertices.size());
-	//local_trend_std_devs.resize(tess.vertices.size());
-
-
-
-	generate_materials();
 
 
 

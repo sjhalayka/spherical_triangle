@@ -44,20 +44,15 @@ using std::setprecision;
 
 //vector<station_data> sd;
 delaunay_voronoi_on_2sphere tess;
-vector<vector<float>> tess_vertices_materials;
-
-vector<vector<float>> tess_dual_vertices_materials;
-
 vector<vector<size_t>> vertex_to_vertex;
 
 vector<indexed_curved_triangle> ctris;
 vector<indexed_curved_triangle> vctris;
 
 
-bool delaunay_mode = true;
+bool delaunay_mode = false;
 bool curved_triangles = true;
 size_t selected_vertex = 0;
-
 bool doing_screenshot = false;
 
 
@@ -68,10 +63,10 @@ bool doing_screenshot = false;
 // OpenGL data and functions
 vector_3 background_colour(0.6, 0.6, 0.6);
 float vertex_colour0[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-float selected_vertex_colour[] = { 1.0f, 1.0f, 1.0f, 0.2 };
+float selected_vertex_colour[] = { 1.0f, 1.0f, 1.0f, 0.2f };
 
 
-float vertex_size = 0.0025;
+float vertex_size = 0.0025f;
 size_t vertex_slices = 5;
 size_t vertex_stacks = 4;
 
@@ -219,125 +214,125 @@ void take_screenshot(size_t num_cams_wide, const char* filename, const bool reve
 }
 
 
-void generate_trend_materials(void)
-{
-
-
-	static const double invalid_data_shade = 0.2;
-
-	set<size_t> invalid_vertices;
-
-	for (size_t i = 0; i < tess.vertices.size(); i++)
-	{
-		tess_vertices_materials[i][0] = invalid_data_shade;
-		tess_vertices_materials[i][1] = invalid_data_shade;
-		tess_vertices_materials[i][2] = invalid_data_shade;
-		tess_vertices_materials[i][3] = 1;
-	}
-
-	if (1)//true == spatial_interpolation)
-	{
-		size_t last_invalid_vertices_size = invalid_vertices.size();
-
-		while (0 != invalid_vertices.size())
-		{
-			set<size_t> new_invalid_vertices;
-
-			for (set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
-			{
-				size_t valid_neighbour_count = 0;
-
-				tess_vertices_materials[*ci][0] = 0;
-				tess_vertices_materials[*ci][1] = 0;
-				tess_vertices_materials[*ci][2] = 0;
-				tess_vertices_materials[*ci][3] = 0;
-
-				for (size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
-				{
-					if (invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
-					{
-						valid_neighbour_count++;
-
-						tess_vertices_materials[*ci][0] += tess_vertices_materials[vertex_to_vertex[*ci][j]][0];
-						tess_vertices_materials[*ci][1] += tess_vertices_materials[vertex_to_vertex[*ci][j]][1];
-						tess_vertices_materials[*ci][2] += tess_vertices_materials[vertex_to_vertex[*ci][j]][2];
-						tess_vertices_materials[*ci][3] += tess_vertices_materials[vertex_to_vertex[*ci][j]][3];
-					}
-				}
-
-				if (0 == valid_neighbour_count)
-				{
-					new_invalid_vertices.insert(*ci);
-					tess_vertices_materials[*ci][0] = invalid_data_shade;
-					tess_vertices_materials[*ci][1] = invalid_data_shade;
-					tess_vertices_materials[*ci][2] = invalid_data_shade;
-					tess_vertices_materials[*ci][3] = 1;
-				}
-				else
-				{
-					tess_vertices_materials[*ci][0] /= valid_neighbour_count;
-					tess_vertices_materials[*ci][1] /= valid_neighbour_count;
-					tess_vertices_materials[*ci][2] /= valid_neighbour_count;
-					tess_vertices_materials[*ci][3] /= valid_neighbour_count;
-				}
-			}
-
-			invalid_vertices.swap(new_invalid_vertices);
-
-			if (invalid_vertices.size() == last_invalid_vertices_size)
-				break;
-			else
-				last_invalid_vertices_size = invalid_vertices.size();
-		}
-	}
-
-	if (true == curved_triangles)
-	{
-		for (size_t i = 0; i < ctris.size(); i++)
-			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
-
-		for (size_t i = 0; i < vctris.size(); i++)
-			vctris[i].init_mats(tess_vertices_materials[vctris[i].seed_i0], tess_vertices_materials[vctris[i].seed_i1], tess_vertices_materials[vctris[i].seed_i2]);
-	}
-}
-
-void generate_temperature_materials(void)
-{
-	for (size_t i = 0; i < tess.vertices.size(); i++)
-	{
-		tess_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
-		tess_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		tess_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		tess_vertices_materials[i][3] = 1;
-	}
-
-	for (size_t i = 0; i < tess.dual_vertices.size(); i++)
-	{
-		tess_dual_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
-		tess_dual_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		tess_dual_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
-		tess_dual_vertices_materials[i][3] = 1;
-	}
-
-	if (true == curved_triangles)
-	{
-		for (size_t i = 0; i < ctris.size(); i++)
-			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
-
-		for (size_t i = 0; i < vctris.size(); i++)
-			vctris[i].init_mats(tess_dual_vertices_materials[vctris[i].seed_i0], tess_dual_vertices_materials[vctris[i].seed_i1], tess_dual_vertices_materials[vctris[i].seed_i2]);
-	}
-}
-
-
-void generate_materials(void)
-{
-	vector<float> mat(4, 0.666f);
-	tess_vertices_materials.resize(tess.vertices.size(), mat);
-	tess_dual_vertices_materials.resize(tess.dual_vertices.size(), mat);
-
-	generate_temperature_materials();
-}
+//void generate_trend_materials(void)
+//{
+//
+//
+//	static const double invalid_data_shade = 0.2;
+//
+//	set<size_t> invalid_vertices;
+//
+//	for (size_t i = 0; i < tess.vertices.size(); i++)
+//	{
+//		tess_vertices_materials[i][0] = invalid_data_shade;
+//		tess_vertices_materials[i][1] = invalid_data_shade;
+//		tess_vertices_materials[i][2] = invalid_data_shade;
+//		tess_vertices_materials[i][3] = 1;
+//	}
+//
+//	if (1)//true == spatial_interpolation)
+//	{
+//		size_t last_invalid_vertices_size = invalid_vertices.size();
+//
+//		while (0 != invalid_vertices.size())
+//		{
+//			set<size_t> new_invalid_vertices;
+//
+//			for (set<size_t>::const_iterator ci = invalid_vertices.begin(); ci != invalid_vertices.end(); ci++)
+//			{
+//				size_t valid_neighbour_count = 0;
+//
+//				tess_vertices_materials[*ci][0] = 0;
+//				tess_vertices_materials[*ci][1] = 0;
+//				tess_vertices_materials[*ci][2] = 0;
+//				tess_vertices_materials[*ci][3] = 0;
+//
+//				for (size_t j = 0; j < vertex_to_vertex[*ci].size(); j++)
+//				{
+//					if (invalid_vertices.end() == invalid_vertices.find(vertex_to_vertex[*ci][j]))
+//					{
+//						valid_neighbour_count++;
+//
+//						tess_vertices_materials[*ci][0] += tess_vertices_materials[vertex_to_vertex[*ci][j]][0];
+//						tess_vertices_materials[*ci][1] += tess_vertices_materials[vertex_to_vertex[*ci][j]][1];
+//						tess_vertices_materials[*ci][2] += tess_vertices_materials[vertex_to_vertex[*ci][j]][2];
+//						tess_vertices_materials[*ci][3] += tess_vertices_materials[vertex_to_vertex[*ci][j]][3];
+//					}
+//				}
+//
+//				if (0 == valid_neighbour_count)
+//				{
+//					new_invalid_vertices.insert(*ci);
+//					tess_vertices_materials[*ci][0] = invalid_data_shade;
+//					tess_vertices_materials[*ci][1] = invalid_data_shade;
+//					tess_vertices_materials[*ci][2] = invalid_data_shade;
+//					tess_vertices_materials[*ci][3] = 1;
+//				}
+//				else
+//				{
+//					tess_vertices_materials[*ci][0] /= valid_neighbour_count;
+//					tess_vertices_materials[*ci][1] /= valid_neighbour_count;
+//					tess_vertices_materials[*ci][2] /= valid_neighbour_count;
+//					tess_vertices_materials[*ci][3] /= valid_neighbour_count;
+//				}
+//			}
+//
+//			invalid_vertices.swap(new_invalid_vertices);
+//
+//			if (invalid_vertices.size() == last_invalid_vertices_size)
+//				break;
+//			else
+//				last_invalid_vertices_size = invalid_vertices.size();
+//		}
+//	}
+//
+//	if (true == curved_triangles)
+//	{
+//		for (size_t i = 0; i < ctris.size(); i++)
+//			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
+//
+//		for (size_t i = 0; i < vctris.size(); i++)
+//			vctris[i].init_mats(tess_vertices_materials[vctris[i].seed_i0], tess_vertices_materials[vctris[i].seed_i1], tess_vertices_materials[vctris[i].seed_i2]);
+//	}
+//}
+//
+//void generate_temperature_materials(void)
+//{
+//	for (size_t i = 0; i < tess.vertices.size(); i++)
+//	{
+//		tess_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
+//		tess_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+//		tess_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+//		tess_vertices_materials[i][3] = 1;
+//	}
+//
+//	for (size_t i = 0; i < tess.dual_vertices.size(); i++)
+//	{
+//		tess_dual_vertices_materials[i][0] = 0.66666;// rand() / static_cast<double>(RAND_MAX);// 0.6666;
+//		tess_dual_vertices_materials[i][1] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+//		tess_dual_vertices_materials[i][2] = 0.66666;//rand() / static_cast<double>(RAND_MAX);
+//		tess_dual_vertices_materials[i][3] = 1;
+//	}
+//
+//	if (true == curved_triangles)
+//	{
+//		for (size_t i = 0; i < ctris.size(); i++)
+//			ctris[i].init_mats(tess_vertices_materials[ctris[i].seed_i0], tess_vertices_materials[ctris[i].seed_i1], tess_vertices_materials[ctris[i].seed_i2]);
+//
+//		for (size_t i = 0; i < vctris.size(); i++)
+//			vctris[i].init_mats(tess_dual_vertices_materials[vctris[i].seed_i0], tess_dual_vertices_materials[vctris[i].seed_i1], tess_dual_vertices_materials[vctris[i].seed_i2]);
+//	}
+//}
+//
+//
+//void generate_materials(void)
+//{
+//	vector<float> mat(4, 0.666f);
+//	tess_vertices_materials.resize(tess.vertices.size(), mat);
+//	tess_dual_vertices_materials.resize(tess.dual_vertices.size(), mat);
+//
+//	generate_temperature_materials();
+//}
 
 
 
@@ -464,9 +459,20 @@ void init_opengl(const int& width, const int& height)
 	cam = main_camera.eye;
 	cam.normalize();
 
-	for (size_t i = 0; i < tess.vertices.size(); i++)
+	//for (size_t i = 0; i < tess.vertices.size(); i++)
+	//{
+	//	float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
+
+	//	if (dotsq > highest_dotsq)
+	//	{
+	//		highest_dotsq = dotsq;
+	//		selected_vertex = i;
+	//	}
+	//}
+
+	for (size_t i = 0; i < tess.dual_centres.size(); i++)
 	{
-		float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
+		float dotsq = cam.x * tess.dual_centres[i].x + cam.y * tess.dual_centres[i].y + cam.z * tess.dual_centres[i].z;
 
 		if (dotsq > highest_dotsq)
 		{
@@ -474,6 +480,7 @@ void init_opengl(const int& width, const int& height)
 			selected_vertex = i;
 		}
 	}
+
 
 
 }
@@ -531,178 +538,6 @@ void display_func(void)
 
 	glColor3f(control_list_colour.x, control_list_colour.y, control_list_colour.z);
 
-	size_t break_size = 20;
-	size_t start = 20;
-
-	ostringstream oss;
-	oss.precision(4);
-
-	//if(false)//false == draw_trend_data)
-	//{
-	//	render_string(10, start, GLUT_BITMAP_HELVETICA_10, string("Drawing temperature data."));
-
-	//	if(true == draw_control_list)
-	//	{
-	//		render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: Decade -/+"));
-	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Year -/+"));
-	//		render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Month -/+"));
-
-	//		render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw linear trend data"));
-
-	//		render_string(10, start + 9*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
-	//		render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
-	//		render_string(10, start + 11*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
-	//		render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
-	//		render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
-	//		render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
-	//		render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
-	//	}
-	//	else 
-	//	{
-	//		render_string(10, start + 2*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
-
-	//		if(718660 == sd[selected_vertex].station_id)
-	//			render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Paris of the prairies!"));
-	//	}
-
-
-	//	oss << "Total stations = " << tess.vertices.size();
-	//	render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Date = " << month_names[curr_month] << ' ' << curr_year;
-	//	render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
-	//	render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
-	//	render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	if(sd[selected_vertex].years.end() == sd[selected_vertex].years.find(curr_year))
-	//	{
-	//		oss << "Local temp = Not available for this year" << endl;
-	//		render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//		oss.str("");
-	//		oss.clear();
-	//	}
-	//	else
-	//	{
-	//		double temp = sd[selected_vertex].years[curr_year].temperatures[curr_month];
-
-	//		if(temp == -99)
-	//		{
-	//			oss << "Local temp = Not available for this month" << endl;
-	//			render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//			oss.str("");
-	//			oss.clear();
-	//		}
-	//		else
-	//		{
-	//			oss << "Local temp = " << temp << " C" << endl;
-	//			render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//			oss.str("");
-	//			oss.clear();
-	//		}
-	//	}
-
-	//	oss << "Global min, mean, max temp = " << global_min_temp << ", " << global_mean_temp << " +/- " << global_mean_temp_std_dev << ", " << global_max_temp << " C" << endl;
-	//	render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//}
-	//else
-	//{
-	//	oss << "Drawing warming/cooling linear trend data." << endl;
-	//	render_string(10, start, GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Trend sample minimum = " << trend_minimum_samples;
-	//	render_string(10, start + 1*break_size, GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-
-
-	//	if(true == draw_control_list)
-	//	{
-	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("1/2: First trend decade -/+"));
-	//		render_string(10, start + 5*break_size, GLUT_BITMAP_HELVETICA_10, string("Q/W: First trend year -/+"));
-	//		render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("A/S: Last trend decade -/+"));
-	//		render_string(10, start + 7*break_size, GLUT_BITMAP_HELVETICA_10, string("Z/X: Last trend year -/+"));
-	//		render_string(10, start + 8*break_size, GLUT_BITMAP_HELVETICA_10, string("3/4: Trend sample minimum -/+"));
-
-	//		render_string(10, start + 10*break_size, GLUT_BITMAP_HELVETICA_10, string("D: Draw temperature data"));
-
-	//		render_string(10, start + 12*break_size, GLUT_BITMAP_HELVETICA_10, string("F: Curved triangles"));
-	//		render_string(10, start + 13*break_size, GLUT_BITMAP_HELVETICA_10, string("G: Spatial interpolation"));
-	//		render_string(10, start + 14*break_size, GLUT_BITMAP_HELVETICA_10, string("H: Draw vertices"));
-	//		render_string(10, start + 15*break_size, GLUT_BITMAP_HELVETICA_10, string("J: Draw triangle outlines"));
-	//		render_string(10, start + 16*break_size, GLUT_BITMAP_HELVETICA_10, string("K: Draw axis"));
-	//		render_string(10, start + 17*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Shrink control list"));
-	//		render_string(10, start + 18*break_size, GLUT_BITMAP_HELVETICA_10, string(";: Calculate lighting"));
-	//	}
-	//	else
-	//	{
-	//		render_string(10, start + 3*break_size, GLUT_BITMAP_HELVETICA_10, string("Keyboard controls:"));
-	//		render_string(10, start + 4*break_size, GLUT_BITMAP_HELVETICA_10, string("L: Expand control list"));
-
-	//		if(718660 == sd[selected_vertex].station_id)
-	//			render_string(10, start + 6*break_size, GLUT_BITMAP_HELVETICA_10, string("Go Blades!"));
-	//	}
-
-
-	//	oss << "Total stations = " << tess.vertices.size();
-	//	render_string(10, win_y - (start + 5*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Trend years = [" << trends_first_year << ", " << trends_last_year << ']';
-	//	render_string(10, win_y - (start + 4*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Station = " << sd[selected_vertex].station_id << ' ' << sd[selected_vertex].name << ' ' << sd[selected_vertex].country << endl;
-	//	render_string(10, win_y - (start + 3*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Lat Lon = " << sd[selected_vertex].latitude << ' ' << sd[selected_vertex].longitude << endl;
-	//	render_string(10, win_y - (start + 2*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	if(-99 == local_mean_trends[selected_vertex])
-	//		oss << "Local mean trend = Not available for this station" << endl;
-	//	else
-	//		oss << "Local mean trend = " << local_mean_trends[selected_vertex]*100.0f << " +/- " << local_trend_std_devs[selected_vertex]*100.0f << " C/century" << endl;
-
-	//	render_string(10, win_y - (start + 1*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-	//	oss << "Global min, mean, max trend = " << global_min_trend*100.0f << ", " << global_mean_trend*100.0f << " +/- " << global_mean_trend_std_dev*100.0f << ", " << global_max_trend*100.0f << " C/century" << endl;
-	//	render_string(10, win_y - (start + 0*break_size), GLUT_BITMAP_HELVETICA_10, oss.str());
-	//	oss.str("");
-	//	oss.clear();
-
-
-
-
-	//}
-
 
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -724,13 +559,13 @@ void keyboard_func(unsigned char key, int x, int y)
 
 	case 'f':
 	{
-		curved_triangles = !curved_triangles;
+		//curved_triangles = !curved_triangles;
 		//	generate_materials();
 		break;
 	}
 	case 'g':
 	{
-		delaunay_mode = !delaunay_mode;
+		//delaunay_mode = !delaunay_mode;
 		break;
 	}
 
@@ -817,9 +652,10 @@ void motion_func(int x, int y)
 		cam = main_camera.eye;
 		cam.normalize();
 
-		for (size_t i = 0; i < tess.vertices.size(); i++)
+
+		for (size_t i = 0; i < tess.dual_centres.size(); i++)
 		{
-			float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
+			float dotsq = cam.x * tess.dual_centres[i].x + cam.y * tess.dual_centres[i].y + cam.z * tess.dual_centres[i].z;
 
 			if (dotsq > highest_dotsq)
 			{
@@ -901,10 +737,9 @@ void draw_objects(void)
 
 	if (delaunay_mode == true && curved_triangles == true)
 	{
-		if (false == disable_lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
+		glColor3f(0.5, 0.5, 0.5);
+
+
 
 		glBegin(GL_TRIANGLES);
 
@@ -990,28 +825,15 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.dtris.size(); i++)
 		{
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i0][0]);
-			else
-				glColor3f(tess_vertices_materials[tess.dtris[i].i0][0], tess_vertices_materials[tess.dtris[i].i0][1], tess_vertices_materials[tess.dtris[i].i0][2]);
+			glColor3f(0.5, 0.5, 0.5);
 
-			glNormal3f(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+			glNormal3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
 
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i1][0]);
-			else
-				glColor3f(tess_vertices_materials[tess.dtris[i].i1][0], tess_vertices_materials[tess.dtris[i].i1][1], tess_vertices_materials[tess.dtris[i].i1][2]);
-
-			glNormal3f(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+			glNormal3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
 
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_vertices_materials[tess.dtris[i].i2][0]);
-			else
-				glColor3f(tess_vertices_materials[tess.dtris[i].i2][0], tess_vertices_materials[tess.dtris[i].i2][1], tess_vertices_materials[tess.dtris[i].i2][2]);
-
-			glNormal3f(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+			glNormal3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 			glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
 		}
 
@@ -1056,28 +878,15 @@ void draw_objects(void)
 
 		for (size_t i = 0; i < tess.vtris.size(); i++)
 		{
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i0][0]);
-			else
-				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i0][0], tess_dual_vertices_materials[tess.vtris[i].i0][1], tess_dual_vertices_materials[tess.vtris[i].i0][2]);
+			glColor3f(0.5, 0.5, 0.5);
 
-			glNormal3f(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+			glNormal3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
 			glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
 
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i1][0]);
-			else
-				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i1][0], tess_dual_vertices_materials[tess.vtris[i].i1][1], tess_dual_vertices_materials[tess.vtris[i].i1][2]);
-
-			glNormal3f(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+			glNormal3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
 			glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
 
-			if (false == disable_lighting)
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, &tess_dual_vertices_materials[tess.vtris[i].i2][0]);
-			else
-				glColor3f(tess_dual_vertices_materials[tess.vtris[i].i2][0], tess_dual_vertices_materials[tess.vtris[i].i2][1], tess_dual_vertices_materials[tess.vtris[i].i2][2]);
-
-			glNormal3f(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+			glNormal3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
 			glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
 		}
 
@@ -1112,17 +921,29 @@ void draw_objects(void)
 		else
 			glDisable(GL_LIGHTING);
 
+		glColor3f(0.5, 0.5, 0.5);
+
 		glBegin(GL_TRIANGLES);
 
+		
+		
 		for (size_t i = 0; i < vctris.size(); i++)
 		{
-			// Preliminary backface culling.
 			if (0 < main_camera.look_at.dot(vctris[i].circumcentre_normal))
 				continue;
 
-			//if(false == disable_lighting)
-			//	ctris[i].draw_mat4();
-			//else
+			if (tess.vtri_vngon_index[i] == selected_vertex)
+				glColor3f(0, 1, 0.0);
+			else 
+			{
+				const vector<size_t> x = tess.vngon_adjacencies[selected_vertex];
+
+				if (x.end() != find(x.begin(), x.end(), tess.vtri_vngon_index[i]))
+					glColor3f(1.0, 1.0, 0);
+				else
+					glColor3f(0.5, 0.5, 0.5);
+			}
+
 			vctris[i].draw_colour3();
 		}
 
@@ -1173,6 +994,13 @@ void draw_objects(void)
 
 
 
+
+	//glColor3f(0, 0, 0);
+
+	//glPushMatrix();
+	//glTranslatef(tess.dual_centres[selected_vertex].x*1.1, tess.dual_centres[selected_vertex].y * 1.1, tess.dual_centres[selected_vertex].z * 1.1);
+	//glutSolidSphere(0.1, vertex_slices * 10, vertex_stacks * 10);
+	//glPopMatrix();
 
 
 

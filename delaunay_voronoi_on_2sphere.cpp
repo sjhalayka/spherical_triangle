@@ -233,6 +233,7 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 		centre = centre / static_cast<double>(vngons[i].v.size());
 
 		dual_vertices.push_back(centre);
+		dual_centres.push_back(centre);
 
 		for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
 		{
@@ -253,12 +254,99 @@ bool delaunay_voronoi_on_2sphere::construct_delaunay_voronoi(void)
 			const vector_3 normal = A.cross(B);
 
 			if (normal.dot(centre) < 0)
-				swap(tri.i0, tri.i2);
+				swap(tri.i0, tri.i1);
 
 			if (tri.i0 < dual_vertices.size() && tri.i1 < dual_vertices.size() && tri.i2 < dual_vertices.size())
+			{
+				vtri_vngon_index.push_back(i);
 				vtris.push_back(tri);
+			}
 		}
 	}
+
+
+	vngon_adjacencies.resize(vngons.size());
+
+	for (size_t i = 0; i < vngons.size(); i++)
+	{
+		vector<sorted_indexed_edge> central_cell_edges;
+
+		for (size_t j = 0; j < vngons[i].v.size(); j += 2)
+		{
+			size_t v0 = vngons[i].v[j];
+			size_t v1 = vngons[i].v[j + 1];
+
+			sorted_indexed_edge edge(v0, v1);
+			central_cell_edges.push_back(edge);
+		}
+
+		for (size_t j = 0; j < vngons.size(); j++)
+		{
+			vector<sorted_indexed_edge> neighbour_edges;
+
+			for (size_t k = 0; k < vngons[j].v.size(); k += 2)
+			{
+				size_t v0 = vngons[j].v[k];
+				size_t v1 = vngons[j].v[k + 1];
+
+				sorted_indexed_edge edge(v0, v1);
+				neighbour_edges.push_back(edge);
+			}
+
+			for (size_t k = 0; k < central_cell_edges.size(); k++)
+				if (neighbour_edges.end() != find(neighbour_edges.begin(), neighbour_edges.end(), central_cell_edges[k]))
+					vngon_adjacencies[i].push_back(j);
+		}
+
+
+		//cout << endl;
+
+		//	centre += dual_vertices[vngons[i].v[j]];
+
+
+
+		//vector_3 centre;
+
+		//for (size_t j = 0; j < vngons[i].v.size(); j++)
+		//	centre += dual_vertices[vngons[i].v[j]];
+
+		//centre = centre / static_cast<double>(vngons[i].v.size());
+
+		//dual_vertices.push_back(centre);
+		//dual_centres.push_back(centre);
+
+		//for (size_t j = 0; j < vngons[i].v.size() - 1; j += 1)
+		//{
+		//	size_t v0 = 0, v1 = 0;
+
+		//	v0 = vngons[i].v[j];
+		//	v1 = vngons[i].v[j + 1];
+
+		//	indexed_triangle tri;
+		//	tri.i0 = v0;
+		//	tri.i1 = v1;
+		//	tri.i2 = dual_vertices.size() - 1;
+
+		//	// Make sure that winding order is consistent
+		//	const vector_3 centre = (dual_vertices[tri.i0] + dual_vertices[tri.i1] + dual_vertices[tri.i2]) * 1 / 3.0;
+		//	const vector_3 A = dual_vertices[tri.i2] - dual_vertices[v0];
+		//	const vector_3 B = dual_vertices[tri.i2] - dual_vertices[v1];
+		//	const vector_3 normal = A.cross(B);
+
+		//	if (normal.dot(centre) < 0)
+		//		swap(tri.i0, tri.i1);
+
+		//	if (tri.i0 < dual_vertices.size() && tri.i1 < dual_vertices.size() && tri.i2 < dual_vertices.size())
+		//	{
+		//		vtri_vngon_index.push_back(i);
+		//		vtris.push_back(tri);
+		//	}
+		//}
+	}
+
+
+
+
 
 	vertices = new_points;
 	vertices.pop_back();
