@@ -459,16 +459,6 @@ void init_opengl(const int& width, const int& height)
 	cam = main_camera.eye;
 	cam.normalize();
 
-	//for (size_t i = 0; i < tess.vertices.size(); i++)
-	//{
-	//	float dotsq = cam.x * tess.vertices[i].x + cam.y * tess.vertices[i].y + cam.z * tess.vertices[i].z;
-
-	//	if (dotsq > highest_dotsq)
-	//	{
-	//		highest_dotsq = dotsq;
-	//		selected_vertex = i;
-	//	}
-	//}
 
 	for (size_t i = 0; i < tess.dual_centres.size(); i++)
 	{
@@ -707,20 +697,7 @@ vector_3 slerp(vector_3 s0, vector_3 s1, const double t)
 
 void draw_objects(void)
 {
-	if (false == disable_lighting)
-	{
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHT1);
-		glEnable(GL_LIGHT2);
-		glEnable(GL_LIGHT3);
-		glEnable(GL_LIGHT4);
-		glEnable(GL_LIGHT5);
-	}
-	else
-	{
-		glDisable(GL_LIGHTING);
-	}
+	glDisable(GL_LIGHTING);
 
 	static const float rad_to_deg = 180.0f / pi;
 
@@ -735,28 +712,230 @@ void draw_objects(void)
 		glLineWidth(1.0);
 
 
-	if (delaunay_mode == true && curved_triangles == true)
+	//if (delaunay_mode == true && curved_triangles == true)
+	//{
+	//	glColor3f(0.5, 0.5, 0.5);
+
+
+
+	//	glBegin(GL_TRIANGLES);
+
+	//	for (size_t i = 0; i < ctris.size(); i++)
+	//		ctris[i].draw_colour3();
+
+	//	glEnd();
+
+
+	//	for (size_t j = 0; j < ctris.size(); j += 1)
+	//	{
+	//		glColor3f(0, 0, 0);
+
+	//		glBegin(GL_LINE_STRIP);
+	//		{
+	//			const vector_3 vj_start = tess.vertices[ctris[j].seed_i0];
+	//			const vector_3 vj_end = tess.vertices[ctris[j].seed_i1];
+
+	//			const size_t step_count = 100;
+
+	//			const double step_size = 1.0 / step_count;
+
+	//			double t = 0;
+
+	//			for (size_t k = 0; k < step_count; k++, t += step_size)
+	//			{
+	//				vector_3 vj = slerp(vj_start, vj_end, t);
+	//				glVertex3d(vj.x, vj.y, vj.z);
+	//			}
+	//		}
+
+	//		glEnd();
+	//		glBegin(GL_LINE_STRIP);
+	//		{
+	//			const vector_3 vj_start = tess.vertices[ctris[j].seed_i1];
+	//			const vector_3 vj_end = tess.vertices[ctris[j].seed_i2];
+
+	//			const size_t step_count = 100;
+
+	//			const double step_size = 1.0 / step_count;
+
+	//			double t = 0;
+
+	//			for (size_t k = 0; k < step_count; k++, t += step_size)
+	//			{
+	//				vector_3 vj = slerp(vj_start, vj_end, t);
+	//				glVertex3d(vj.x, vj.y, vj.z);
+	//			}
+	//		}
+
+	//		glEnd();
+	//		glBegin(GL_LINE_STRIP);
+	//		{
+	//			const vector_3 vj_start = tess.vertices[ctris[j].seed_i2];
+	//			const vector_3 vj_end = tess.vertices[ctris[j].seed_i0];
+
+	//			const size_t step_count = 100;
+
+	//			const double step_size = 1.0 / step_count;
+
+	//			double t = 0;
+
+	//			for (size_t k = 0; k < step_count; k++, t += step_size)
+	//			{
+	//				vector_3 vj = slerp(vj_start, vj_end, t);
+	//				glVertex3d(vj.x, vj.y, vj.z);
+	//			}
+	//		}
+
+	//		glEnd();
+	//	}
+	//}
+	//else if (delaunay_mode == true && curved_triangles == false)
+	//{
+	//	if (false == disable_lighting)
+	//		glEnable(GL_LIGHTING);
+	//	else
+	//		glDisable(GL_LIGHTING);
+
+	//	glBegin(GL_TRIANGLES);
+
+	//	for (size_t i = 0; i < tess.dtris.size(); i++)
+	//	{
+	//		glColor3f(0.5, 0.5, 0.5);
+
+	//		glNormal3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+	//		glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+
+	//		glNormal3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+	//		glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+
+	//		glNormal3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+	//		glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+	//	}
+
+	//	glEnd();
+
+	//	if (true == draw_tri_outlines)
+	//	{
+	//		glDisable(GL_LIGHTING);
+
+	//		glLineWidth(outline_width);
+
+	//		glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
+
+	//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	//		glBegin(GL_TRIANGLES);
+
+	//		for (size_t i = 0; i < tess.dtris.size(); i++)
+	//		{
+	//			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
+	//			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
+	//			glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
+	//		}
+	//		glEnd();
+
+	//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//	}
+
+
+
+	//}
+	//else if (delaunay_mode == false && curved_triangles == false)
+	//{
+	//	if (false == disable_lighting)
+	//		glEnable(GL_LIGHTING);
+	//	else
+	//		glDisable(GL_LIGHTING);
+
+	//	glBegin(GL_TRIANGLES);
+
+	//	for (size_t i = 0; i < tess.vtris.size(); i++)
+	//	{
+	//		glColor3f(0.5, 0.5, 0.5);
+
+	//		glNormal3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+	//		glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+
+	//		glNormal3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+	//		glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+
+	//		glNormal3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+	//		glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+	//	}
+
+	//	glEnd();
+
+	//	{
+	//		glDisable(GL_LIGHTING);
+
+	//		glLineWidth(outline_width);
+
+	//		glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
+
+	//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	//		glBegin(GL_TRIANGLES);
+
+	//		for (size_t i = 0; i < tess.vtris.size(); i++)
+	//		{
+	//			glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
+	//			glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
+	//			glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
+	//		}
+	//		glEnd();
+
+	//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//	}
+	//}
+	//else
+
+
+
+
+if (delaunay_mode == false && curved_triangles == true)
+{
+	glColor3f(0.5, 0.5, 0.5);
+
+	glBegin(GL_TRIANGLES);
+
+	for (size_t i = 0; i < vctris.size(); i++)
 	{
-		glColor3f(0.5, 0.5, 0.5);
+		//if (0 < main_camera.look_at.dot(vctris[i].circumcentre_normal))
+		//	continue;
 
-
-
-		glBegin(GL_TRIANGLES);
-
-		for (size_t i = 0; i < ctris.size(); i++)
-			ctris[i].draw_colour3();
-
-		glEnd();
-
-
-		for (size_t j = 0; j < ctris.size(); j += 1)
+		if (tess.vtri_vngon_index[i] == selected_vertex)
+			glColor3f(0, 1, 0.0);
+		else
 		{
-			glColor3f(0, 0, 0);
+			const vector<size_t> x = tess.vngon_adjacencies[selected_vertex];
+
+			if (x.end() != find(x.begin(), x.end(), tess.vtri_vngon_index[i]))
+				glColor3f(1.0, 1.0, 0);
+			else
+				glColor3f(0.5, 0.5, 0.5);
+		}
+
+		vctris[i].draw_colour3(tess.dual_centres[i]);
+	}
+
+	glEnd();
+
+
+
+
+
+	if (true == draw_tri_outlines)
+	{
+		for (size_t i = 0; i < tess.vngons.size(); i++)
+		{
+			glColor3f(0, 0.0, 0);
 
 			glBegin(GL_LINE_STRIP);
+
+			for (size_t j = 0; j < tess.vngons[i].v.size() - 1; j += 1)
 			{
-				const vector_3 vj_start = tess.vertices[ctris[j].seed_i0];
-				const vector_3 vj_end = tess.vertices[ctris[j].seed_i1];
+				const vector_3 vj_start = tess.dual_vertices[tess.vngons[i].v[j]];
+				const vector_3 vj_end = tess.dual_vertices[tess.vngons[i].v[j + 1]];
 
 				const size_t step_count = 100;
 
@@ -772,217 +951,9 @@ void draw_objects(void)
 			}
 
 			glEnd();
-			glBegin(GL_LINE_STRIP);
-			{
-				const vector_3 vj_start = tess.vertices[ctris[j].seed_i1];
-				const vector_3 vj_end = tess.vertices[ctris[j].seed_i2];
-
-				const size_t step_count = 100;
-
-				const double step_size = 1.0 / step_count;
-
-				double t = 0;
-
-				for (size_t k = 0; k < step_count; k++, t += step_size)
-				{
-					vector_3 vj = slerp(vj_start, vj_end, t);
-					glVertex3d(vj.x, vj.y, vj.z);
-				}
-			}
-
-			glEnd();
-			glBegin(GL_LINE_STRIP);
-			{
-				const vector_3 vj_start = tess.vertices[ctris[j].seed_i2];
-				const vector_3 vj_end = tess.vertices[ctris[j].seed_i0];
-
-				const size_t step_count = 100;
-
-				const double step_size = 1.0 / step_count;
-
-				double t = 0;
-
-				for (size_t k = 0; k < step_count; k++, t += step_size)
-				{
-					vector_3 vj = slerp(vj_start, vj_end, t);
-					glVertex3d(vj.x, vj.y, vj.z);
-				}
-			}
-
-			glEnd();
 		}
 	}
-	else if (delaunay_mode == true && curved_triangles == false)
-	{
-		if (false == disable_lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
-
-		glPointSize(4.0);
-
-		glBegin(GL_TRIANGLES);
-
-		for (size_t i = 0; i < tess.dtris.size(); i++)
-		{
-			glColor3f(0.5, 0.5, 0.5);
-
-			glNormal3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
-			glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
-
-			glNormal3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
-			glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
-
-			glNormal3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
-			glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
-		}
-
-		glEnd();
-
-		if (true == draw_tri_outlines)
-		{
-			glDisable(GL_LIGHTING);
-
-			glLineWidth(outline_width);
-
-			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			glBegin(GL_TRIANGLES);
-
-			for (size_t i = 0; i < tess.dtris.size(); i++)
-			{
-				glVertex3d(tess.vertices[tess.dtris[i].i0].x, tess.vertices[tess.dtris[i].i0].y, tess.vertices[tess.dtris[i].i0].z);
-				glVertex3d(tess.vertices[tess.dtris[i].i1].x, tess.vertices[tess.dtris[i].i1].y, tess.vertices[tess.dtris[i].i1].z);
-				glVertex3d(tess.vertices[tess.dtris[i].i2].x, tess.vertices[tess.dtris[i].i2].y, tess.vertices[tess.dtris[i].i2].z);
-			}
-			glEnd();
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-
-
-
-	}
-	else if (delaunay_mode == false && curved_triangles == false)
-	{
-		if (false == disable_lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
-
-		glPointSize(4.0);
-
-		glBegin(GL_TRIANGLES);
-
-		for (size_t i = 0; i < tess.vtris.size(); i++)
-		{
-			glColor3f(0.5, 0.5, 0.5);
-
-			glNormal3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
-			glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
-
-			glNormal3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
-			glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
-
-			glNormal3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
-			glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
-		}
-
-		glEnd();
-
-		{
-			glDisable(GL_LIGHTING);
-
-			glLineWidth(outline_width);
-
-			glColor4f(outline_colour[0], outline_colour[1], outline_colour[2], 0.2f);
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			glBegin(GL_TRIANGLES);
-
-			for (size_t i = 0; i < tess.vtris.size(); i++)
-			{
-				glVertex3d(tess.dual_vertices[tess.vtris[i].i0].x, tess.dual_vertices[tess.vtris[i].i0].y, tess.dual_vertices[tess.vtris[i].i0].z);
-				glVertex3d(tess.dual_vertices[tess.vtris[i].i1].x, tess.dual_vertices[tess.vtris[i].i1].y, tess.dual_vertices[tess.vtris[i].i1].z);
-				glVertex3d(tess.dual_vertices[tess.vtris[i].i2].x, tess.dual_vertices[tess.vtris[i].i2].y, tess.dual_vertices[tess.vtris[i].i2].z);
-			}
-			glEnd();
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-	}
-	else if (delaunay_mode == false && curved_triangles == true)
-	{
-		if (false == disable_lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
-
-		glColor3f(0.5, 0.5, 0.5);
-
-		glBegin(GL_TRIANGLES);
-
-		
-		
-		for (size_t i = 0; i < vctris.size(); i++)
-		{
-			if (0 < main_camera.look_at.dot(vctris[i].circumcentre_normal))
-				continue;
-
-			if (tess.vtri_vngon_index[i] == selected_vertex)
-				glColor3f(0, 1, 0.0);
-			else 
-			{
-				const vector<size_t> x = tess.vngon_adjacencies[selected_vertex];
-
-				if (x.end() != find(x.begin(), x.end(), tess.vtri_vngon_index[i]))
-					glColor3f(1.0, 1.0, 0);
-				else
-					glColor3f(0.5, 0.5, 0.5);
-			}
-
-			vctris[i].draw_colour3();
-		}
-
-		glEnd();
-
-
-
-
-
-		if (true == draw_tri_outlines)
-		{
-			for (size_t i = 0; i < tess.vngons.size(); i++)
-			{
-				glColor3f(0, 0.0, 0);
-
-				glBegin(GL_LINE_STRIP);
-
-				for (size_t j = 0; j < tess.vngons[i].v.size() - 1; j += 1)
-				{
-					const vector_3 vj_start = tess.dual_vertices[tess.vngons[i].v[j]];
-					const vector_3 vj_end = tess.dual_vertices[tess.vngons[i].v[j + 1]];
-
-					const size_t step_count = 100;
-
-					const double step_size = 1.0 / step_count;
-
-					double t = 0;
-
-					for (size_t k = 0; k < step_count; k++, t += step_size)
-					{
-						vector_3 vj = slerp(vj_start, vj_end, t);
-						glVertex3d(vj.x, vj.y, vj.z);
-					}
-				}
-
-				glEnd();
-			}
-		}
-	}
+}
 
 
 

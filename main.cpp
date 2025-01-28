@@ -79,29 +79,29 @@ int main(int argc, char **argv)
 
 	// Get edge length data to make for variable subdivision
 	size_t max_subdivisions = 5;
-	double longest_edge = 0;
+	//double longest_edge = 0;
 
-	const double exponent = 1; // lesser value means more subdivision
+	//const double exponent = 1; // lesser value means more subdivision
 
-	for(size_t i = 0; i < tess.dtris.size(); i++)
-	{
-		sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
-		sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
-		sorted_indexed_edge edge2(tess.dtris[i].i2, tess.dtris[i].i0);
+	//for(size_t i = 0; i < tess.dtris.size(); i++)
+	//{
+	//	sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
+	//	sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
+	//	sorted_indexed_edge edge2(tess.dtris[i].i2, tess.dtris[i].i0);
 
-		double dist0 = pow(d_3(tess.vertices[tess.dtris[i].i0], tess.vertices[tess.dtris[i].i1]), exponent);
-		double dist1 = pow(d_3(tess.vertices[tess.dtris[i].i1], tess.vertices[tess.dtris[i].i2]), exponent);
-		double dist2 = pow(d_3(tess.vertices[tess.dtris[i].i2], tess.vertices[tess.dtris[i].i0]), exponent);
+	//	double dist0 = pow(d_3(tess.vertices[tess.dtris[i].i0], tess.vertices[tess.dtris[i].i1]), exponent);
+	//	double dist1 = pow(d_3(tess.vertices[tess.dtris[i].i1], tess.vertices[tess.dtris[i].i2]), exponent);
+	//	double dist2 = pow(d_3(tess.vertices[tess.dtris[i].i2], tess.vertices[tess.dtris[i].i0]), exponent);
 
-		if(dist0 > longest_edge)
-			longest_edge = dist0;
-		
-		if(dist1 > longest_edge)
-			longest_edge = dist1;
+	//	if(dist0 > longest_edge)
+	//		longest_edge = dist0;
+	//	
+	//	if(dist1 > longest_edge)
+	//		longest_edge = dist1;
 
-		if(dist2 > longest_edge)
-			longest_edge = dist2;
-	}
+	//	if(dist2 > longest_edge)
+	//		longest_edge = dist2;
+	//}
 
 
 
@@ -109,23 +109,23 @@ int main(int argc, char **argv)
 
 	for(size_t i = 0; i < tess.dtris.size(); i++)
 	{
-		sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
-		sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
-		sorted_indexed_edge edge2(tess.dtris[i].i2, tess.dtris[i].i0);
+		//sorted_indexed_edge edge0(tess.dtris[i].i0, tess.dtris[i].i1);
+		//sorted_indexed_edge edge1(tess.dtris[i].i1, tess.dtris[i].i2);
+		//sorted_indexed_edge edge2(tess.dtris[i].i2, tess.dtris[i].i0);
 
-		double dist0 = pow(d_3(tess.vertices[tess.dtris[i].i0], tess.vertices[tess.dtris[i].i1]), exponent);
-		double dist1 = pow(d_3(tess.vertices[tess.dtris[i].i1], tess.vertices[tess.dtris[i].i2]), exponent);
-		double dist2 = pow(d_3(tess.vertices[tess.dtris[i].i2], tess.vertices[tess.dtris[i].i0]), exponent);
+		//double dist0 = pow(d_3(tess.vertices[tess.dtris[i].i0], tess.vertices[tess.dtris[i].i1]), exponent);
+		//double dist1 = pow(d_3(tess.vertices[tess.dtris[i].i1], tess.vertices[tess.dtris[i].i2]), exponent);
+		//double dist2 = pow(d_3(tess.vertices[tess.dtris[i].i2], tess.vertices[tess.dtris[i].i0]), exponent);
 
-		double local_longest = dist0;
+		//double local_longest = dist0;
 
-		if(dist1 > local_longest)
-			local_longest = dist1;
+		//if(dist1 > local_longest)
+		//	local_longest = dist1;
 
-		if(dist2 > local_longest)
-			local_longest = dist2;
+		//if(dist2 > local_longest)
+		//	local_longest = dist2;
 
-		size_t subdivisions = ceil(static_cast<double>(max_subdivisions)*(local_longest/longest_edge));
+		size_t subdivisions = 5;// ceil(static_cast<double>(max_subdivisions)* (local_longest / longest_edge));
 
 		ctris[i].init_geometry(
 			tess.dtris[i].i0, tess.vertices[tess.dtris[i].i0], 
@@ -149,28 +149,28 @@ int main(int argc, char **argv)
 	cout << "Generating (approximately) spherical hexagons (out of triangles)" << endl;
 
 	// Get edge length data to make for variable subdivision
-	longest_edge = 0;
+	//longest_edge = 0;
 
 	
-	for (size_t i = 0; i < tess.vtris.size(); i++)
-	{
-		sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
-		sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
-		sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
+	//for (size_t i = 0; i < tess.vtris.size(); i++)
+	//{
+	//	sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
+	//	sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
+	//	sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
 
-		double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
-		double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
-		double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
+	//	double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
+	//	double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
+	//	double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
 
-		if (dist0 > longest_edge)
-			longest_edge = dist0;
+	//	if (dist0 > longest_edge)
+	//		longest_edge = dist0;
 
-		if (dist1 > longest_edge)
-			longest_edge = dist1;
+	//	if (dist1 > longest_edge)
+	//		longest_edge = dist1;
 
-		if (dist2 > longest_edge)
-			longest_edge = dist2;
-	}
+	//	if (dist2 > longest_edge)
+	//		longest_edge = dist2;
+	//}
 
 
 
@@ -178,23 +178,23 @@ int main(int argc, char **argv)
 
 	for (size_t i = 0; i < tess.vtris.size(); i++)
 	{
-		sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
-		sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
-		sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
+		//sorted_indexed_edge edge0(tess.vtris[i].i0, tess.vtris[i].i1);
+		//sorted_indexed_edge edge1(tess.vtris[i].i1, tess.vtris[i].i2);
+		//sorted_indexed_edge edge2(tess.vtris[i].i2, tess.vtris[i].i0);
 
-		double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
-		double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
-		double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
+		//double dist0 = pow(d_3(tess.dual_vertices[tess.vtris[i].i0], tess.dual_vertices[tess.vtris[i].i1]), exponent);
+		//double dist1 = pow(d_3(tess.dual_vertices[tess.vtris[i].i1], tess.dual_vertices[tess.vtris[i].i2]), exponent);
+		//double dist2 = pow(d_3(tess.dual_vertices[tess.vtris[i].i2], tess.dual_vertices[tess.vtris[i].i0]), exponent);
 
-		double local_longest = dist0;
+		//double local_longest = dist0;
 
-		if (dist1 > local_longest)
-			local_longest = dist1;
+		//if (dist1 > local_longest)
+		//	local_longest = dist1;
 
-		if (dist2 > local_longest)
-			local_longest = dist2;
+		//if (dist2 > local_longest)
+		//	local_longest = dist2;
 
-		size_t subdivisions = ceil(static_cast<double>(max_subdivisions) * (local_longest / longest_edge));
+		size_t subdivisions = 5;// ceil(static_cast<double>(max_subdivisions)* (local_longest / longest_edge));
 
 		vctris[i].init_geometry(
 			tess.vtris[i].i0, tess.dual_vertices[tess.vtris[i].i0],
